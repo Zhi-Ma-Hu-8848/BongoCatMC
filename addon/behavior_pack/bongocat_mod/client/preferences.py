@@ -7,8 +7,10 @@ TOGGLE_KEYS = MIRROR_KEYS+('mouse_recenter',)
 
 class Preferences(object):
     def __init__(self, data=None):
-        self.data = {'size':1.,'flip_vertical':False,'flip_horizontal':False,'mouse_recenter':False,'position':None}
+        self.data = {'size':1.,'flip_vertical':False,'flip_horizontal':False,'mouse_recenter':False,'position':None,'model':'default'}
         if isinstance(data,dict):
+            if data.get('model') in ('default','deepseek'):
+                self.data['model'] = data['model']
             for key, lo, hi in [('size',.5,2.)]:
                 value = data.get(key)
                 if isinstance(value,(int,float)) and not math.isnan(value) and not math.isinf(value):

@@ -3,8 +3,21 @@
 #include "neteaseModelVertexUtil.h"
 #include "uniformMacro.h"
 #include "bongocatmc_data.h"
-LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
-LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
+#ifndef BONGOCATMC_VERTEX_TEXTURE_H
+#define BONGOCATMC_VERTEX_TEXTURE_H
+// These RGBA8 texels encode numbers, not colours. Use full precision and
+// explicit level zero: implicit filtering/LOD must not alter packed data.
+vec4 bongoData(highp sampler2D source, highp float index, highp vec2 size) {
+    highp vec2 pixel = vec2(mod(index, size.x), floor(index / size.x));
+#if __VERSION__ >= 300
+    return texelFetch(source, ivec2(pixel), 0);
+#else
+    return texture2DLod(source, (pixel + vec2(.5)) / size, 0.0);
+#endif
+}
+#endif
+LAYOUT_BINDING(1) uniform highp sampler2D TEXTURE_1;
+LAYOUT_BINDING(2) uniform highp sampler2D TEXTURE_2;
 uniform highp vec4 EXTRA_VECTOR1;
 uniform highp vec4 EXTRA_VECTOR2;
 uniform highp vec4 EXTRA_VECTOR3;
@@ -18,8 +31,8 @@ varying highp float opacity;
 varying highp vec2 canvasPoint;
 varying highp float clipToCanvas;
 vec2 decode(vec4 p){vec4 b=floor(p*255.0+.5);return vec2(b.r*256.0+b.g,b.b*256.0+b.a)/65535.0;}
-vec4 meta(float i){return texture2D(TEXTURE_2,vec2(mod(i,512.0)+.5,floor(i/512.0)+.5)/vec2(512.0,META_H));}
-vec2 sampleValue(float frame,float index){float i=frame*STRIDE+index;return decode(texture2D(TEXTURE_1,vec2(mod(i,DATA_W)+.5,floor(i/DATA_W)+.5)/vec2(DATA_W,DATA_H)));}
+vec4 meta(float i){return bongoData(TEXTURE_2,i,vec2(512.0,META_H));}
+vec2 sampleValue(float frame,float index){return decode(bongoData(TEXTURE_1,frame*STRIDE+index,vec2(DATA_W,DATA_H)));}
 vec2 head(float base,float index){
  vec2 xy=clamp(EXTRA_VECTOR1.xy,vec2(0.0),vec2(4.0)),lo=floor(xy),hi=ceil(xy),t=fract(xy);
  return mix(mix(sampleValue(base+lo.y*5.0+lo.x,index),sampleValue(base+lo.y*5.0+hi.x,index),t.x),

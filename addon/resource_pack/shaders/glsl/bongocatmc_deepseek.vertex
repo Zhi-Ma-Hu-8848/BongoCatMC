@@ -1,0 +1,99 @@
+// __multiversion__
+#include "bongocatmc_precision.h"
+#include "neteaseModelVertexUtil.h"
+#include "uniformMacro.h"
+#include "bongocatmc_deepseek_data.h"
+#ifndef BONGOCATMC_VERTEX_TEXTURE_H
+#define BONGOCATMC_VERTEX_TEXTURE_H
+// These RGBA8 texels encode numbers, not colours. Use full precision and
+// explicit level zero: implicit filtering/LOD must not alter packed data.
+vec4 bongoData(highp sampler2D source, highp float index, highp vec2 size) {
+    highp vec2 pixel = vec2(mod(index, size.x), floor(index / size.x));
+#if __VERSION__ >= 300
+    return texelFetch(source, ivec2(pixel), 0);
+#else
+    return texture2DLod(source, (pixel + vec2(.5)) / size, 0.0);
+#endif
+}
+#endif
+LAYOUT_BINDING(1) uniform highp sampler2D TEXTURE_1;
+LAYOUT_BINDING(2) uniform highp sampler2D TEXTURE_2;
+uniform highp vec4 EXTRA_VECTOR1;
+uniform highp vec4 EXTRA_VECTOR2;
+uniform highp vec4 EXTRA_VECTOR3;
+uniform highp vec4 EXTRA_VECTOR4;
+varying highp vec2 sourceUV;
+varying highp vec2 maskUV;
+varying highp vec4 maskBounds;
+varying highp float masked;
+varying highp float inverted;
+varying highp float opacity;
+vec2 decode(vec4 p){vec4 b=floor(p*255.0+.5);return vec2(b.r*256.0+b.g,b.b*256.0+b.a)/65535.0;}
+vec4 meta(float i){return bongoData(TEXTURE_2,i,vec2(1024.0,META_H));}
+float channel(float index){
+ float slot=floor(index/3.0);vec4 v=slot<4.0?EXTRA_VECTOR1:(slot<8.0?EXTRA_VECTOR2:EXTRA_VECTOR4);
+ float component=mod(slot,4.0),encodedValue=component<.5?v.x:(component<1.5?v.y:(component<2.5?v.z:v.w));
+ return mod(floor(encodedValue/pow(256.0,mod(index,3.0))),256.0);
+}
+float parameter(float index){
+ if(index>254.0)return 0.0;
+ float b=channel(index);
+ return meta(PARAM_META+index).r>.001?clamp(.5+(b-128.0)/254.0,0.0,1.0):b/255.0;
+}
+vec2 data(float index){return decode(bongoData(TEXTURE_1,index,vec2(DATA_W,DATA_H)))*4.0-2.0;}
+vec2 lineValue(float base,float stride,float nx,float t){
+ vec2 a=data(base);return nx>1.0?mix(a,data(base+stride),t):a;
+}
+vec2 planeValue(float base,float stride,vec2 dims,vec2 t){
+ vec2 a=lineValue(base,stride,dims.x,t.x);
+ return dims.y>1.0?mix(a,lineValue(base+stride*dims.x,stride,dims.x,t.x),t.y):a;
+}
+vec2 cubeValue(float base,float stride,vec3 dims,vec3 t){
+ vec2 a=planeValue(base,stride,dims.xy,t.xy);
+ return dims.z>1.0?mix(a,planeValue(base+stride*dims.x*dims.y,stride,dims.xy,t.xy),t.z):a;
+}
+vec2 tensor(float descriptor,float index){
+ vec4 address=floor(meta(descriptor)*255.0+.5);
+ float start=address.r+address.g*256.0+address.b*65536.0;
+ vec4 ids=floor(meta(descriptor+1.0)*255.0+.5),dims=floor(meta(descriptor+2.0)*255.0+.5);
+ float stride=floor(decode(meta(descriptor+3.0)).x*65535.0+.5);
+ vec4 coord=vec4(parameter(ids.x),parameter(ids.y),parameter(ids.z),parameter(ids.w))*(dims-1.0);
+ // Last endpoint uses the preceding cell with interpolation weight one.
+ vec4 lo=min(floor(coord),max(vec4(0.0),dims-2.0)),t=coord-lo;
+ float offset=lo.x+dims.x*(lo.y+dims.y*(lo.z+dims.z*lo.w));
+ float base=start+index+offset*stride;
+ vec2 a=cubeValue(base,stride,dims.xyz,t.xyz);
+ return dims.w>1.0?mix(a,cubeValue(base+stride*dims.x*dims.y*dims.z,stride,dims.xyz,t.xyz),t.w):a;
+}
+void main(){
+ vec2 point;masked=0.0;inverted=0.0;maskUV=vec2(0.0);maskBounds=vec4(0.0);
+ if(TEXCOORD_0.y>.4){
+  vec2 corner=vec2(TEXCOORD_0.x,step(.55,TEXCOORD_0.y));float key=channel(KEY_CHANNEL);
+  vec2 atlasOrigin=floor(decode(meta(KEY_META+key*3.0))*65535.0+.5);
+  vec2 canvasOrigin=floor(decode(meta(KEY_META+key*3.0+1.0))*65535.0+.5);
+  vec2 cropSize=floor(decode(meta(KEY_META+key*3.0+2.0))*65535.0+.5);
+  point=(canvasOrigin+corner*cropSize-vec2(512.0))*vec2(1.0,-1.0)/1024.0;
+  sourceUV=(atlasOrigin+corner*cropSize)/4096.0;opacity=channel(34.0)/255.0;
+ }else{
+  float vertex=floor(TEXCOORD_0.x*8192.0+.5),mi=vertex*2.0;
+  sourceUV=decode(meta(mi));vec2 info=floor(decode(meta(mi+1.0))*65535.0+.5);
+  float descriptor=DRAW_META+info.x*20.0;
+  vec2 local=tensor(descriptor,info.y);
+  vec2 row0=tensor(descriptor+4.0,0.0),row1=tensor(descriptor+4.0,1.0),row2=tensor(descriptor+4.0,2.0);
+  point=local.x*row0+local.y*row1+row2;
+  opacity=clamp(tensor(descriptor+8.0,0.0).x,0.0,1.0);
+  vec4 flags=floor(meta(descriptor+18.0)*255.0+.5);masked=flags.r;inverted=flags.g;
+  if(masked>.5)maskUV=tensor(descriptor+12.0,info.y);
+  maskBounds=vec4(decode(meta(descriptor+16.0)),decode(meta(descriptor+17.0)));
+ }
+ // Equal bottom alignment with the default pet; retain square source canvas.
+ point=point*1.45;
+ float mirror=floor(EXTRA_VECTOR3.w+.5);
+ point*=vec2(1.0-2.0*mod(mirror,2.0),1.0-2.0*step(2.0,mirror));
+ point+=vec2(0.0,.225);
+ vec4 posed=vec4(point*24.0*max(EXTRA_VECTOR3.x,.01)+vec2(EXTRA_VECTOR3.y,16.0+EXTRA_VECTOR3.z),0.0,1.0);
+#if defined(USE_SKINNING) && defined(NETEASE_SKINNING)
+ posed=GetBoneMatForNetease(int(BONEID_0))*posed;
+#endif
+ gl_Position=WORLDVIEWPROJ*posed;
+}

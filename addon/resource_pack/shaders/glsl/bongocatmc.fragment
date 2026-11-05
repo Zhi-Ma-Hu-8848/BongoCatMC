@@ -2,7 +2,7 @@
 #include "bongocatmc_precision.h"
 #include "fragmentVersionCentroidUV.h"
 #include "uniformMacro.h"
-LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
+LAYOUT_BINDING(0) uniform highp sampler2D TEXTURE_0;
 varying highp vec2 sourceUV;
 varying highp vec2 maskUV;
 varying highp vec4 maskBounds;

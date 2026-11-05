@@ -286,5 +286,35 @@ class HudStartupTests(unittest.TestCase):
         menu.refresh()
         menu.UpdateScreen.assert_not_called()
 
+    def test_mobile_slider_poll_fallback_and_foreign_release(self):
+        menu=CatMenu('test','menu',{});menu.Create();menu.expanded='settings'
+        slider=menu.size_slider
+        with patch.object(api,'GetTouchPos',create=True) as native:
+            native.return_value=(300.,300.)
+            slider.down({'TouchId':7,'TouchPosX':100.,'TouchPosY':100.})
+            native.return_value=(1800.,300.)
+            slider.poll()
+            self.assertEqual(self.owner.preferences.data['size'],2.)
+            slider.down({'TouchId':8,'TouchPosX':10.,'TouchPosY':100.})
+            native.return_value=(30.,300.)
+            slider.poll()
+            self.assertEqual(self.owner.preferences.data['size'],2.)
+            slider.up({'TouchId':8,'TouchPosX':0.,'TouchPosY':0.})
+            self.assertEqual(slider.touch,7)
+            slider.up({'TouchId':7,'TouchPosX':0.,'TouchPosY':0.})
+            self.assertEqual(self.owner.preferences.data['size'],2.)
+            self.owner.save_preferences.assert_called_once()
+
+    def test_other_finger_cannot_replace_or_release_menu_selection(self):
+        menu=CatMenu('test','menu',{});menu.Create()
+        a={'TouchId':1,'TouchPosX':10.,'TouchPosY':50.}
+        b=dict(a,TouchId=2)
+        menu.row_callback('motions','wave','down')(a)
+        menu.row_callback('motions','flash','down')(b)
+        menu.row_callback('motions','flash','up')(b)
+        self.owner.play_effect_motion.assert_not_called()
+        menu.row_callback('motions','wave','up')(a)
+        self.owner.play_effect_motion.assert_called_once_with('wave')
+
 
 if __name__ == '__main__': unittest.main()

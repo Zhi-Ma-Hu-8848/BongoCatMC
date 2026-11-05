@@ -14,6 +14,7 @@ class CatHud(api.GetScreenNodeCls()):
         self.doll = None
         self.actor = None
         self.model = -1
+        self.model_kind = None
         self.error = None
         self.last = 0.
         self.head = [2.,2.]
@@ -50,13 +51,24 @@ class CatHud(api.GetScreenNodeCls()):
         self.touch_button.SetButtonTouchMoveCallback(self.touch_move)
         self.touch_button.SetButtonTouchUpCallback(self.touch_up)
         self.touch_button.SetButtonTouchCancelCallback(self.touch_cancel)
-        self.touch_button.SetButtonScreenExitCallback(self.touch_cancel)
+        self.touch_button.SetButtonScreenExitCallback(self.touch_exit)
         self.doll = self.actor.asNeteasePaperDoll()
-        ok = self.doll.RenderSkeletonModel({'skeleton_model_name':'bongocatmc_default',
+        self.apply_model()
+        return True
+
+    def apply_model(self):
+        kind = self.owner.preferences.data['model']
+        if kind == self.model_kind:
+            return
+        self.model_kind = kind
+        self.sent = {}
+        self.model = -1
+        self.size = None
+        self.error = None
+        ok = self.doll.RenderSkeletonModel({'skeleton_model_name':'bongocatmc_'+kind,
              'animation':'','scale':1.2,'render_depth':-50,'init_rot_y':180,'init_rot_x':0,'init_rot_z':0})
         if not ok:
             self.error = 'RenderSkeletonModel failed'
-        return True
 
     def layout(self):
         size = tuple(self.GetBaseUIControl('/root').GetSize())
@@ -75,15 +87,18 @@ class CatHud(api.GetScreenNodeCls()):
             self.actor.SetSize((220*scale,180*scale))
         # Leave the hotbar clear; phone attack controls remain usable underneath.
         # Narrow target over the cat, leaving the native mobile use control free.
-        self.touch_size = (110*scale*amount,64*scale*amount)
-        original = (size[0]-10*scale-168*scale*amount,size[1]-92*scale-93*scale*amount)
+        deepseek = self.owner.preferences.data['model'] == 'deepseek'
+        self.touch_size = (110*scale*amount,(115 if deepseek else 64)*scale*amount)
+        original = (size[0]-10*scale-168*scale*amount,size[1]-92*scale-(144 if deepseek else 93)*scale*amount)
         self.touch_position = original if position is None else tuple(
             6.+position[i]*max(1.,size[i]-self.touch_size[i]-12.) for i in (0,1))
         shift = tuple(self.touch_position[i]-original[i] for i in (0,1))
         self.actor.SetPosition((size[0]-230*scale+shift[0],size[1]-234*scale+shift[1]))
         if metrics_changed:
             self.touch_button.SetSize(self.touch_size)
-        self.touch_button.SetPosition(self.touch_position)
+        # Keep the original native capture target still while the artwork moves.
+        # Up/Cancel places the target at the final location after ending capture.
+        if not self.drag.press:self.touch_button.SetPosition(self.touch_position)
         if metrics_changed:
             self.UpdateScreen(True)
 
@@ -99,7 +114,25 @@ class CatHud(api.GetScreenNodeCls()):
     def touch_cancel(self, args):
         self.drag.cancel(args)
 
+    def touch_exit(self, args):
+        self.drag.cancel()
+
     def follow(self, dt):
+        deepseek = self.owner.preferences.data['model'] == 'deepseek'
+        if self.owner.menu is self:
+            point = self.drag.cursor()
+            if point is not None:
+                pixels = api.GetEngineCompFactory().CreateGame(api.GetLevelId()).GetScreenSize()
+                if isinstance(pixels,(tuple,list)) and min(pixels)>0:
+                    self.target = [max(0.,min(4.,point[0]/float(pixels[0])*4.)),
+                                   max(0.,min(4.,4.-point[1]/float(pixels[1])*4.))]
+                    # Share menu pointer input across models, while retaining
+                    # the default cat's smoothing and DeepSeek's own look solver.
+                    rate = 1. if deepseek else 1.-math.exp(-dt*22.)
+                    for i in range(2):
+                        self.head[i] += (self.target[i]-self.head[i])*rate
+                    self.rotation = None
+                    return
         rotation = self.rot.GetRot()
         if rotation and self.rotation:
             pitch = rotation[0]-self.rotation[0]
@@ -110,7 +143,8 @@ class CatHud(api.GetScreenNodeCls()):
         decay = math.exp(-dt*3.) if self.owner.preferences.data['mouse_recenter'] else 1.
         rate = 1.-math.exp(-dt*22.)
         for i in range(2):
-            self.head[i] += (self.target[i]-self.head[i])*rate
+            if deepseek:self.head[i] = self.target[i]
+            else:self.head[i] += (self.target[i]-self.head[i])*rate
             self.target[i] = 2.+(self.target[i]-2.)*decay
 
     def render_frame(self):
@@ -127,6 +161,7 @@ class CatHud(api.GetScreenNodeCls()):
         self.last = now
         if self.doll is None and not self.bind():
             return
+        self.apply_model()
         self.layout()
         self.drag.update(now)
         top = api.GetTopUI()
@@ -150,7 +185,9 @@ class CatHud(api.GetScreenNodeCls()):
             self.visible = True
         self.follow(dt)
         state = self.owner.inputs.snapshot(now)
+        deepseek = self.model_kind == 'deepseek'
         key = float(state['key']) if self.owner.effects.motion != 'wave' else 0.
+        art = KEY_ART.get(state['art'],KEY_ART['KeyW'])
         phase = now%4.1
         blink = max(0.,1.-abs(phase-.12)/.12) if phase < .24 else 0.
         amount = self.owner.preferences.data['size']
@@ -160,8 +197,11 @@ class CatHud(api.GetScreenNodeCls()):
         appearance = (zoom*amount,24.*zoom*(306./354.)*(1.-amount),
                       8.*self.scale+12.*zoom*(amount-1.),float(mirror))
         vectors = [(round(self.head[0],4),round(self.head[1],4),blink,key),
-                   (float(state['left']),float(state['right']),float(KEY_ART[state['art']]),flash),
+                   (float(state['left']),float(state['right']),float(art),flash),
                    appearance,effects]
+        if deepseek:
+            self.owner.effects.frame(now,[(v-2.)*.5 for v in self.head],state)
+            vectors = self.owner.effects.packed(appearance,state)
         native = self.doll.GetModelId()
         if native != self.model:
             self.model = native

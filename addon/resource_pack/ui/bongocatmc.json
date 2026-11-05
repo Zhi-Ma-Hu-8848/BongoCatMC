@@ -992,6 +992,430 @@
           "hover_control": "hover",
           "pressed_control": "pressed"
         }
+      },
+      {
+        "item_Surprised": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "惊讶",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            90
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_Hello": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "打招呼",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            120
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_Sweat": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "流汗",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            150
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_Heart": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "爱心",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            180
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
       }
     ],
     "anchor_from": "top_left",
@@ -1002,7 +1426,7 @@
     ],
     "size": [
       78,
-      90
+      210
     ]
   },
   "expressions_content": {
@@ -1431,6 +1855,430 @@
           "hover_control": "hover",
           "pressed_control": "pressed"
         }
+      },
+      {
+        "item_Bowl": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "碗",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            120
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_Glasses": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "眼镜",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            150
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_StickyNotes": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "便利贴",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            180
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_Egg": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "彩蛋",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            210
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
       }
     ],
     "anchor_from": "top_left",
@@ -1441,7 +2289,234 @@
     ],
     "size": [
       78,
-      120
+      240
+    ]
+  },
+  "models_content": {
+    "type": "panel",
+    "controls": [
+      {
+        "item_default": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "默认小猫",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            0
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      },
+      {
+        "item_deepseek": {
+          "type": "button",
+          "layer": 10,
+          "controls": [
+            {
+              "normal": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_button",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "hover": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_hover",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "pressed": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 1
+              }
+            },
+            {
+              "selected": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_pressed",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 2,
+                "visible": false
+              }
+            },
+            {
+              "text": {
+                "type": "label",
+                "text": "DeepSeek",
+                "color": [
+                  0.34,
+                  0.16,
+                  0.26
+                ],
+                "font_size": "normal",
+                "text_alignment": "center",
+                "shadow": false,
+                "layer": 4,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  11.0
+                ],
+                "size": [
+                  78,
+                  16
+                ]
+              }
+            }
+          ],
+          "button_mappings": [
+            {
+              "from_button_id": "button.menu_select",
+              "to_button_id": "button.click",
+              "mapping_type": "pressed"
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            0,
+            30
+          ],
+          "size": [
+            78,
+            30
+          ],
+          "default_control": "normal",
+          "hover_control": "hover",
+          "pressed_control": "pressed"
+        }
+      }
+    ],
+    "anchor_from": "top_left",
+    "anchor_to": "top_left",
+    "offset": [
+      0,
+      0
+    ],
+    "size": [
+      78,
+      60
     ]
   },
   "menu": {
@@ -1858,6 +2933,112 @@
                 "hover_control": "hover",
                 "pressed_control": "pressed"
               }
+            },
+            {
+              "models": {
+                "type": "button",
+                "layer": 10,
+                "controls": [
+                  {
+                    "normal": {
+                      "type": "image",
+                      "texture": "textures/ui/bongocatmc/pink_button",
+                      "size": [
+                        "100%",
+                        "100%"
+                      ],
+                      "keep_ratio": false,
+                      "nineslice_size": 4,
+                      "layer": 1
+                    }
+                  },
+                  {
+                    "hover": {
+                      "type": "image",
+                      "texture": "textures/ui/bongocatmc/pink_hover",
+                      "size": [
+                        "100%",
+                        "100%"
+                      ],
+                      "keep_ratio": false,
+                      "nineslice_size": 4,
+                      "layer": 1
+                    }
+                  },
+                  {
+                    "pressed": {
+                      "type": "image",
+                      "texture": "textures/ui/bongocatmc/pink_pressed",
+                      "size": [
+                        "100%",
+                        "100%"
+                      ],
+                      "keep_ratio": false,
+                      "nineslice_size": 4,
+                      "layer": 1
+                    }
+                  },
+                  {
+                    "selected": {
+                      "type": "image",
+                      "texture": "textures/ui/bongocatmc/pink_pressed",
+                      "size": [
+                        "100%",
+                        "100%"
+                      ],
+                      "keep_ratio": false,
+                      "nineslice_size": 4,
+                      "layer": 2,
+                      "visible": false
+                    }
+                  },
+                  {
+                    "text": {
+                      "type": "label",
+                      "text": "模型",
+                      "color": [
+                        0.34,
+                        0.16,
+                        0.26
+                      ],
+                      "font_size": "normal",
+                      "text_alignment": "center",
+                      "shadow": false,
+                      "layer": 4,
+                      "anchor_from": "top_left",
+                      "anchor_to": "top_left",
+                      "offset": [
+                        0,
+                        11.0
+                      ],
+                      "size": [
+                        78,
+                        16
+                      ]
+                    }
+                  }
+                ],
+                "button_mappings": [
+                  {
+                    "from_button_id": "button.menu_select",
+                    "to_button_id": "button.click",
+                    "mapping_type": "pressed"
+                  }
+                ],
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  252,
+                  0
+                ],
+                "size": [
+                  78,
+                  30
+                ],
+                "default_control": "normal",
+                "hover_control": "hover",
+                "pressed_control": "pressed"
+              }
             }
           ],
           "anchor_from": "top_left",
@@ -1867,7 +3048,7 @@
             14
           ],
           "size": [
-            246,
+            330,
             30
           ]
         }
@@ -2248,6 +3429,98 @@
           "anchor_to": "top_left",
           "offset": [
             182,
+            50
+          ],
+          "size": [
+            78,
+            105.0
+          ]
+        }
+      },
+      {
+        "models": {
+          "type": "panel",
+          "layer": 40,
+          "visible": false,
+          "controls": [
+            {
+              "bg": {
+                "type": "image",
+                "texture": "textures/ui/bongocatmc/pink_panel",
+                "size": [
+                  "100%",
+                  "100%"
+                ],
+                "keep_ratio": false,
+                "nineslice_size": 4,
+                "layer": 0
+              }
+            },
+            {
+              "list@common.scrolling_panel": {
+                "layer": 2,
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  0
+                ],
+                "size": [
+                  78,
+                  105.0
+                ],
+                "$touch": true,
+                "$scrolling_content": "bongocatmc.models_content",
+                "$scrolling_pane_size": [
+                  78,
+                  105.0
+                ],
+                "$scrolling_pane_size_touch": [
+                  78,
+                  105.0
+                ],
+                "$scroll_view_control_size": [
+                  78,
+                  105.0
+                ],
+                "$view_port_size_touch": [
+                  78,
+                  105.0
+                ],
+                "$scroll_view_port_size_touch": [
+                  78,
+                  105.0
+                ],
+                "$scroll_view_port_max_size_touch": [
+                  78,
+                  105.0
+                ],
+                "$scroll_view_port_panel_size": [
+                  78,
+                  105.0
+                ],
+                "$scroll_bar_contained_touch": true,
+                "$scroll_box_visible_touch": false,
+                "$scroll_size_touch": [
+                  0,
+                  105.0
+                ],
+                "$show_background": false,
+                "$scroll_bar_left_padding_size_touch": [
+                  0,
+                  0
+                ],
+                "$scroll_bar_right_padding_size_touch": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "offset": [
+            266,
             50
           ],
           "size": [

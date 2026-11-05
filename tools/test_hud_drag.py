@@ -86,5 +86,69 @@ class HudDragTests(unittest.TestCase):
         self.owner.open_menu.assert_not_called()
         self.owner.save_preferences.assert_called_once()
 
+    @patch('bongocat_mod.client.hud_drag.time.time')
+    def test_mobile_polling_without_move_callbacks_and_release_zero(self, clock):
+        self.start(clock);self.hud.touch_cancel(self.point)
+        with patch.object(startup.api,'GetTouchPos',create=True) as touch:
+            touch.return_value=tuple(self.point[k]*3 for k in ('TouchPosX','TouchPosY'))
+            self.hud.touch_down(self.point)
+            origin=self.hud.touch_position
+            clock.return_value=10.6
+            touch.return_value=((self.point['TouchPosX']-70)*3,(self.point['TouchPosY']-30)*3)
+            self.hud.drag.update(10.6)
+            self.assertAlmostEqual(self.hud.touch_position[0],origin[0]-70,places=3)
+            saved=list(self.owner.preferences.data['position'])
+            touch.return_value=(0,0)
+            self.hud.touch_up(dict(self.point,TouchPosX=0,TouchPosY=0))
+            self.assertEqual(self.owner.preferences.data['position'],saved)
+
+    @patch('bongocat_mod.client.hud_drag.time.time')
+    def test_owner_move_beats_stale_touch_and_foreign_touch_cannot_steal(self, clock):
+        self.start(clock);self.hud.touch_cancel(self.point)
+        with patch.object(startup.api,'GetTouchPos',create=True) as touch:
+            touch.return_value=(self.point['TouchPosX'],self.point['TouchPosY'])
+            self.hud.touch_down(self.point);clock.return_value=10.6
+            self.hud.touch_down(dict(self.point,TouchId=2))
+            touch.return_value=(0,0);self.hud.drag.update(10.6)
+            self.assertIsNone(self.owner.preferences.data['position'])
+            moved=dict(self.point,TouchPosX=self.point['TouchPosX']-70)
+            self.hud.touch_move(moved)
+            saved=list(self.owner.preferences.data['position'])
+            self.hud.drag.update(10.7)
+            self.hud.touch_cancel(dict(self.point,TouchId=2))
+            self.assertIsNotNone(self.hud.drag.press)
+            self.assertEqual(self.owner.preferences.data['position'],saved)
+            self.hud.touch_cancel(dict(moved,TouchPosX=moved['TouchPosX']-15))
+            self.assertIsNone(self.hud.drag.press)
+            self.owner.save_preferences.assert_called_once()
+            self.owner.open_menu.assert_not_called()
+
+    @patch('bongocat_mod.client.hud_drag.time.time')
+    def test_capture_target_stays_fixed_and_small_hold_jitter_survives(self, clock):
+        self.start(clock)
+        target=self.hud.touch_button
+        target.SetPosition.reset_mock()
+        clock.return_value=10.1
+        self.hud.touch_move(dict(self.point,TouchPosX=self.point['TouchPosX']+6))
+        self.assertIsNotNone(self.hud.drag.press)
+        clock.return_value=10.6
+        moved=dict(self.point,TouchPosX=self.point['TouchPosX']-60)
+        self.hud.touch_move(moved)
+        target.SetPosition.assert_not_called()
+        self.hud.touch_up(moved)
+        target.SetPosition.assert_called_once_with(self.hud.touch_position)
+        self.owner.open_menu.assert_not_called()
+
+    @patch('bongocat_mod.client.hud_drag.time.time')
+    def test_invalid_coordinates_and_screen_exit_cannot_move_to_zero(self, clock):
+        self.start(clock);clock.return_value=10.6
+        self.hud.touch_move(dict(self.point,TouchPosX=self.point['TouchPosX']-40))
+        saved=list(self.owner.preferences.data['position'])
+        self.hud.touch_move(dict(self.point,TouchPosX=float('nan')))
+        self.hud.touch_exit({'TouchPosX':0,'TouchPosY':0})
+        self.assertEqual(self.owner.preferences.data['position'],saved)
+        self.assertIsNone(self.hud.drag.press)
+        self.owner.save_preferences.assert_called_once()
+
 
 if __name__=='__main__':unittest.main()

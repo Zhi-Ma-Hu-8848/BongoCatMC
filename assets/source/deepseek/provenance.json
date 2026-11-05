@@ -1,0 +1,8 @@
+{
+  "source_file": "Deepseek桌宠.zip",
+  "sha256": "03cf8e7e69b8629b2279ab0cabad91b8cfac849fae3f746da600b30726bf44ab",
+  "model": "img/standard/cat_model/deepseek.model3.json",
+  "original_notice": "README.txt",
+  "core_source": "https://cubism.live2d.com/sdk-web/core/06/live2dcubismcore.min.js",
+  "core_sha256": "8741f739779b5d5210872bd3d7d99f0f1e56e6c87409e7d26d6bb4b80aa1ef47"
+}

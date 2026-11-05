@@ -2,6 +2,7 @@
 """Coordinate-driven slider, matching the reference mod's color picker."""
 import math
 import mod.client.extraClientApi as api
+from bongocat_mod.client.pointer import Pointer
 
 
 class SizeSlider(object):
@@ -15,6 +16,7 @@ class SizeSlider(object):
         self.mouse = False
         self.mouse_scale = (1.,1.)
         self.painted = None
+        self.pointer = Pointer(screen,self.mouse_position)
 
     def bind(self):
         self.content = self.screen.contents['settings']
@@ -28,7 +30,7 @@ class SizeSlider(object):
         button.SetButtonTouchMoveCallback(self.move)
         button.SetButtonTouchUpCallback(self.up)
         button.SetButtonTouchCancelCallback(self.cancel)
-        button.SetButtonScreenExitCallback(self.cancel)
+        button.SetButtonScreenExitCallback(self.exit)
         self.paint()
         return True
 
@@ -41,24 +43,14 @@ class SizeSlider(object):
         return point
 
     def down(self, args):
-        if self.screen.expanded != 'settings' or self.touch is not None:
+        if self.touch is not None:
+            self.pointer.owns(args)
             return
-        point = (args.get('TouchPosX'),args.get('TouchPosY'))
-        if None in point:
+        if self.screen.expanded != 'settings' or not self.pointer.begin(args):
             return
-        self.touch = args.get('TouchId',0)
-        self.mouse_scale = (1.,1.)
-        native = self.mouse_position()
-        self.mouse = native is not None
-        if native is not None:
-            # As in zhima.skin_preview_input, choose the units that match Down.
-            size = self.screen.GetBaseUIControl('/root').GetSize()
-            pixels = api.GetEngineCompFactory().CreateGame(api.GetLevelId()).GetScreenSize()
-            if isinstance(pixels,(tuple,list)) and min(pixels)>0:
-                scale = (size[0]/float(pixels[0]),size[1]/float(pixels[1]))
-                if sum((native[i]*scale[i]-point[i])**2 for i in (0,1)) < sum((native[i]-point[i])**2 for i in (0,1)):
-                    self.mouse_scale = scale
-        self.sample(point[0])
+        self.touch = self.pointer.ident
+        self.mouse,self.mouse_scale = self.pointer.mouse,self.pointer.scale
+        self.sample(self.pointer.value[0])
 
     def sample(self, x):
         if not isinstance(x,(int,float)) or math.isnan(x) or math.isinf(x):
@@ -73,35 +65,32 @@ class SizeSlider(object):
         self.paint()
 
     def move(self, args):
-        if self.touch is None or args.get('TouchId',0) != self.touch:
-            return
-        if self.mouse:
+        if self.touch is not None and self.pointer.record(args):
             self.poll()
-        else:
-            self.sample(args.get('TouchPosX'))
 
-    def poll(self):
-        if self.touch is None or not self.mouse:
+    def poll(self, release=False):
+        if self.touch is None:
             return
-        point = self.mouse_position()
-        if point is not None:
-            self.sample(point[0]*self.mouse_scale[0])
+        point = self.pointer.sample(release)
+        if point is not None:self.sample(point[0])
 
     def up(self, args):
-        if self.touch is None or args.get('TouchId',0) != self.touch:
+        if self.touch is None or not self.pointer.owns(args):
             return
-        # Mouse Up outside a control can contain (0,0). Read the real cursor;
-        # on touch, retain the last Down/Move sample belonging to this finger.
-        self.poll()
+        if not self.pointer.mouse:self.pointer.record(args,release=True)
+        self.poll(release=True)
         self.finish()
 
     def cancel(self, args):
-        if self.touch is not None and args.get('TouchId',self.touch) == self.touch:
-            self.finish()
+        self.up(args)
+
+    def exit(self, args):
+        self.finish()
 
     def finish(self):
         if self.touch is not None:
             self.touch = None
+            self.pointer.end()
             self.screen.owner.save_preferences()
 
     def paint(self):

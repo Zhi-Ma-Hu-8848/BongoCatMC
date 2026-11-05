@@ -157,8 +157,14 @@ def build_assets():
     save(RP/'models/bongocatmc/cat_mesh.json', {'mesh':[{'material':'bongocatmc/cat','vertices':vertices,'indices':indices}]})
     bounds = [[-24,-8,-1],[24,40,1]]
     save(RP/'models/bongocatmc/cat_skeleton.json', {'skeleton':[{'name':'root','parent':'root','initpos':[0,0,0], 'initquaternion':[0,0,0,1], 'initscale':[1,1,1], 'offmtx':[[1,0,0,0],[0,1,0,0],[0,0,1,0]], 'boundingbox':bounds}],'boundingbox':bounds})
-    save(RP/'models/netease_models.json', {'bongocatmc_default':{'dy_load':True,'mesh':'bongocatmc/cat_mesh.json','skeleton':'bongocatmc/cat_skeleton.json','animation':{},'material':'bongocatmc_mesh','texture':{'tex0':'bongocatmc/atlas','tex1':'bongocatmc/poses','tex2':'bongocatmc/meta'}}})
-    save(RP/'materials/entity.material', {'materials':{'version':'1.0.0','bongocatmc_mesh:entity_for_skeleton':{'vertexShader':'shaders/glsl/bongocatmc.vertex','fragmentShader':'shaders/glsl/bongocatmc.fragment','states':['Blending','DisableCulling','DisableDepthWrite','DisableDepthTest'],'blendSrc':'One','blendDst':'OneMinusSrcAlpha','msaaSupport':'Both','+samplerStates':[{'samplerIndex':i,'textureFilter':'Bilinear' if i==0 else 'Point'} for i in range(3)]}}})
+    models_path = RP/'models/netease_models.json'
+    models = json.loads(models_path.read_text()) if models_path.exists() else {}
+    models['bongocatmc_default'] = {'dy_load':True,'mesh':'bongocatmc/cat_mesh.json','skeleton':'bongocatmc/cat_skeleton.json','animation':{},'material':'bongocatmc_mesh','texture':{'tex0':'bongocatmc/atlas','tex1':'bongocatmc/poses','tex2':'bongocatmc/meta'}}
+    save(models_path,models)
+    materials_path = RP/'materials/entity.material'
+    materials = json.loads(materials_path.read_text()) if materials_path.exists() else {'materials':{'version':'1.0.0'}}
+    materials['materials']['bongocatmc_mesh:entity_for_skeleton'] = {'vertexShader':'shaders/glsl/bongocatmc.vertex','fragmentShader':'shaders/glsl/bongocatmc.fragment','states':['Blending','DisableCulling','DisableDepthWrite','DisableDepthTest'],'blendSrc':'One','blendDst':'OneMinusSrcAlpha','msaaSupport':'Both','+samplerStates':[{'samplerIndex':i,'textureFilter':'Bilinear' if i==0 else 'Point'} for i in range(3)]}
+    save(materials_path,materials)
     shader = RP/'shaders/glsl'; shader.mkdir(parents=True,exist_ok=True)
     (shader/'bongocatmc_data.h').write_text('\n'.join('#define %s %.1f'%(k,v) for k,v in [('STRIDE',stride),('DATA_W',width),('DATA_H',height),('META_H',mh),('VERTICES',n),('DRAWABLES',nd),('KEY_META',n*4)])+'\n',encoding='utf8')
     with (shader/'bongocatmc_data.h').open('a',encoding='utf8') as f:
@@ -173,7 +179,10 @@ def build_assets():
     sound, rate = sf.read(SRC/'live2d_motion1.flac',dtype='int16')
     audio = RP/'sounds/bongocatmc'; audio.mkdir(parents=True,exist_ok=True)
     sf.write(audio/'lightning.wav',sound,rate,subtype='PCM_16')
-    save(RP/'sounds/sound_definitions.json',{'bongocatmc.lightning':{'category':'ui','sounds':[{'name':'sounds/bongocatmc/lightning','stream':False}]}})
+    sounds_path = RP/'sounds/sound_definitions.json'
+    sounds = json.loads(sounds_path.read_text()) if sounds_path.exists() else {}
+    sounds['bongocatmc.lightning'] = {'category':'ui','sounds':[{'name':'sounds/bongocatmc/lightning','stream':False}]}
+    save(sounds_path,sounds)
     save(ROOT/'diagnostics/build_report.json', {'vertices':n,'triangles':len(indices),'poses':len(frames),'masked_vertices':masked,'key_overlays':len(keys),'texture_bytes':sum(p.stat().st_size for p in tex.glob('*.png')),'key_source_scale':1,'key_rects':key_rects})
 
 

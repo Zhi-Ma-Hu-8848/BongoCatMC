@@ -12,8 +12,8 @@ from test_native_touch import api, system
 
 class EffectsTests(unittest.TestCase):
     def test_preferences_sanitize_and_roundtrip(self):
-        self.assertEqual(Preferences({'size':float('nan'),'transparency':'broken'}).data,{'size':1.,'flip_vertical':False,'flip_horizontal':False,'mouse_recenter':False,'position':None})
-        self.assertEqual(Preferences({'size':99.,'transparency':-10}).data,{'size':2.,'flip_vertical':False,'flip_horizontal':False,'mouse_recenter':False,'position':None})
+        self.assertEqual(Preferences({'size':float('nan'),'transparency':'broken'}).data,{'size':1.,'flip_vertical':False,'flip_horizontal':False,'mouse_recenter':False,'position':None,'model':'default'})
+        self.assertEqual(Preferences({'size':99.,'transparency':-10}).data,{'size':2.,'flip_vertical':False,'flip_horizontal':False,'mouse_recenter':False,'position':None,'model':'default'})
         prefs=Preferences({'transparency':.75});prefs.change('size',.75)
         self.assertFalse(prefs.change('transparency',.4))
         self.assertNotIn('transparency',prefs.data)

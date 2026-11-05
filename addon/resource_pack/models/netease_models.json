@@ -10,5 +10,17 @@
       "tex1": "bongocatmc/poses",
       "tex2": "bongocatmc/meta"
     }
+  },
+  "bongocatmc_deepseek": {
+    "dy_load": true,
+    "mesh": "bongocatmc_deepseek/mesh.json",
+    "skeleton": "bongocatmc_deepseek/skeleton.json",
+    "animation": {},
+    "material": "bongocatmc_deepseek",
+    "texture": {
+      "tex0": "bongocatmc_deepseek/atlas",
+      "tex1": "bongocatmc_deepseek/poses",
+      "tex2": "bongocatmc_deepseek/meta"
+    }
   }
 }

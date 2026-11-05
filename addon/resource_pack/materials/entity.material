@@ -27,6 +27,33 @@
           "textureFilter": "Point"
         }
       ]
+    },
+    "bongocatmc_deepseek:entity_for_skeleton": {
+      "vertexShader": "shaders/glsl/bongocatmc_deepseek.vertex",
+      "fragmentShader": "shaders/glsl/bongocatmc_deepseek.fragment",
+      "states": [
+        "Blending",
+        "DisableCulling",
+        "DisableDepthWrite",
+        "DisableDepthTest"
+      ],
+      "blendSrc": "One",
+      "blendDst": "OneMinusSrcAlpha",
+      "msaaSupport": "Both",
+      "+samplerStates": [
+        {
+          "samplerIndex": 0,
+          "textureFilter": "Bilinear"
+        },
+        {
+          "samplerIndex": 1,
+          "textureFilter": "Point"
+        },
+        {
+          "samplerIndex": 2,
+          "textureFilter": "Point"
+        }
+      ]
     }
   }
 }

@@ -4,6 +4,7 @@ import mod.client.extraClientApi as api
 from bongocat_mod.client.input_state import InputState, key_art
 from bongocat_mod.client.effects import Effects
 from bongocat_mod.client.preferences import Preferences
+from bongocat_mod.client.deepseek_effects import DeepseekEffects
 
 
 class CatClient(api.GetClientSystemCls()):
@@ -18,6 +19,7 @@ class CatClient(api.GetClientSystemCls()):
         self.menu = None
         self.effects = Effects()
         self.audio = None
+        self.audio_name = None
         self.preferences = Preferences()
         self.config = None
         self.inputs = InputState()
@@ -41,6 +43,7 @@ class CatClient(api.GetClientSystemCls()):
         if self.config is None:
             self.config = api.GetEngineCompFactory().CreateConfigClient(api.GetLevelId())
             self.preferences = Preferences(self.config.GetConfigData('bongocatmc_appearance',True))
+            self.effects = DeepseekEffects() if self.preferences.data['model']=='deepseek' else Effects()
         if not self.ready:
             api.RegisterUI('bongocatmc','hud','bongocat_mod.client.hud.CatHud','bongocatmc.hud')
             api.RegisterUI('bongocatmc','menu','bongocat_mod.client.menu.CatMenu','bongocatmc.menu')
@@ -76,15 +79,46 @@ class CatClient(api.GetClientSystemCls()):
     def stop_effect_motion(self):
         self.effects.stop()
         if self.audio is not None:
-            self.audio.StopCustomMusic('bongocatmc.lightning',0.)
+            self.audio.StopCustomMusic(self.audio_name or 'bongocatmc.lightning',0.)
+        self.audio_name = None
+
+    def select_model(self, name):
+        if name not in ('default','deepseek') or name == self.preferences.data['model']:
+            return
+        self.stop_effect_motion()
+        self.inputs.clear()
+        self.preferences.data['model'] = name
+        self.preferences.dirty = True
+        self.effects = DeepseekEffects() if name=='deepseek' else Effects()
+        for screen in (self.hud,self.menu):
+            if screen is not None:
+                screen.drag.cancel()
+                screen.rotation = None
+                screen.head = [2.,2.]
+                screen.target = [2.,2.]
+        self.save_preferences()
 
     def play_effect_motion(self, name):
-        self.stop_effect_motion()
-        self.effects.play(name,time.time())
-        if name == 'flash':
+        if self.preferences.data['model']=='deepseek':
+            if self.audio is not None and self.audio_name:
+                self.audio.StopCustomMusic(self.audio_name,0.)
+                self.audio_name = None
+            if not self.effects.play(name,time.time()):
+                return
+        else:
+            self.stop_effect_motion()
+            self.effects.play(name,time.time())
+        sound = None
+        if self.preferences.data['model']=='deepseek':
+            if name in ('Surprised','Hello'):
+                sound = 'bongocatmc.deepseek_'+name.lower()
+        elif name == 'flash':
+            sound = 'bongocatmc.lightning'
+        if sound:
             if self.audio is None:
                 self.audio = api.GetEngineCompFactory().CreateCustomAudio(api.GetLevelId())
-            self.audio.PlayCustomUIMusic('bongocatmc.lightning',1.,1.,False)
+            self.audio_name = sound
+            self.audio.PlayCustomUIMusic(sound,1.,1.,False)
 
     def key(self, args):
         code_text = str(args.get('key',''))

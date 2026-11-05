@@ -1,0 +1,13 @@
+{
+  "name": "bongocatmc-build-tools",
+  "private": true,
+  "scripts": {
+    "sample:cat": "node tools/sample_cat.cjs",
+    "sample:deepseek": "node tools/sample_deepseek_parameters.cjs",
+    "build:deepseek": "npm run sample:deepseek && python tools/build_deepseek.py",
+    "reference:deepseek": "esbuild tools/reference_deepseek_physics.ts --bundle --platform=node --format=cjs --outfile=build/reference_deepseek_physics.cjs && node build/reference_deepseek_physics.cjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

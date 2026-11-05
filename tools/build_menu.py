@@ -53,8 +53,8 @@ def menu_definitions(actor):
         im.save(textures/('pink_'+name+'.png'))
     controls=[{'root':{'type':'panel','size':['100%','100%'],'controls':[{'actor':actor},{'touch':touch_button()}]}}]
     controls.append({'outside':dict(touch_button(),size=['100%','100%'],layer=10)})
-    bar=[{key:button(text,i*84,0,78,30)} for i,(key,text) in enumerate([('settings','设置'),('motions','动作'),('expressions','表情')])]
-    controls.append({'bar':dict(type='panel',layer=30,controls=bar,**rect(14,14,246,30))})
+    bar=[{key:button(text,i*84,0,78,30)} for i,(key,text) in enumerate([('settings','设置'),('motions','动作'),('expressions','表情'),('models','模型')])]
+    controls.append({'bar':dict(type='panel',layer=30,controls=bar,**rect(14,14,330,30))})
     close=button('退出',-14,14,78,30)
     close.update(anchor_from='top_right',anchor_to='top_right',layer=30)
     controls.append({'close':close})
@@ -63,7 +63,7 @@ def menu_definitions(actor):
     for group,entries in CATALOG['ENTRIES'].items():
         width=CATALOG['LIST_WIDTH'];height=CATALOG['MAX_VISIBLE_ROWS']*CATALOG['ROW_HEIGHT']
         scroll=scrolling_list('bongocatmc.'+group+'_content',width,height)
-        controls.append({group:dict(type='panel',layer=40,visible=False,controls=[{'bg':surface('panel')},{'list@common.scrolling_panel':scroll}],**rect(98 if group=='motions' else 182,50,width,height))})
+        controls.append({group:dict(type='panel',layer=40,visible=False,controls=[{'bg':surface('panel')},{'list@common.scrolling_panel':scroll}],**rect({'motions':98,'expressions':182,'models':266}[group],50,width,height))})
         result[group+'_content']=dropdown_content(entries)
     result['menu']={'type':'screen','is_showing_menu':True,'absorbs_input':True,'is_modal':True,'should_steal_mouse':True,'render_game_behind':True,'controls':controls}
     return result

@@ -7,5 +7,23 @@
         "stream": false
       }
     ]
+  },
+  "bongocatmc.deepseek_surprised": {
+    "category": "ui",
+    "sounds": [
+      {
+        "name": "sounds/bongocatmc/deepseek_surprised",
+        "stream": false
+      }
+    ]
+  },
+  "bongocatmc.deepseek_hello": {
+    "category": "ui",
+    "sounds": [
+      {
+        "name": "sounds/bongocatmc/deepseek_hello",
+        "stream": false
+      }
+    ]
   }
 }
