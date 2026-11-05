@@ -1,0 +1,49 @@
+{
+  "namespace": "bongocatmc",
+  "hud": {
+    "type": "screen",
+    "is_showing_menu": false,
+    "absorbs_input": false,
+    "is_modal": false,
+    "should_steal_mouse": false,
+    "render_game_behind": true,
+    "controls": [
+      {
+        "root": {
+          "type": "panel",
+          "size": [
+            "100%",
+            "100%"
+          ],
+          "controls": [
+            {
+              "actor": {
+                "type": "custom",
+                "renderer": "netease_paper_doll_renderer",
+                "skeleton_model_name": "",
+                "animation": "",
+                "animation_looped": false,
+                "rotation": "gesture_x",
+                "screen_scale": 1.0,
+                "init_rot_y": 0,
+                "enable_scissor_test": false,
+                "clips_children": false,
+                "layer": 1,
+                "size": [
+                  180,
+                  140
+                ],
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "offset": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

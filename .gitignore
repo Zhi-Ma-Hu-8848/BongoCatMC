@@ -1,0 +1,11 @@
+build/
+diagnostics/
+__pycache__/
+*.pyc
+*.pyo
+.mcdev_temp/
+.mcdk/
+.venv/
+node_modules/
+.env
+.env.*

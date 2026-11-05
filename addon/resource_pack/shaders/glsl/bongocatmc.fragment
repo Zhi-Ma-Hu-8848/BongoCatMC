@@ -1,0 +1,23 @@
+// __multiversion__
+#include "bongocatmc_precision.h"
+#include "fragmentVersionCentroidUV.h"
+#include "uniformMacro.h"
+LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
+varying highp vec2 sourceUV;
+varying highp vec2 maskUV;
+varying highp vec4 maskBounds;
+varying highp float masked;
+varying highp float inverted;
+varying highp float opacity;
+varying highp vec2 canvasPoint;
+void main(){
+ // The desktop canvas clips expression meshes parked outside the canvas.
+ if(abs(canvasPoint.x)>306.0/354.0 || abs(canvasPoint.y)>.5)discard;
+ vec4 color=texture2D(TEXTURE_0,sourceUV);float a=color.a*opacity;
+ if(masked>.5){
+  float inside=step(maskBounds.x,maskUV.x)*step(maskBounds.y,maskUV.y)*step(maskUV.x,maskBounds.z)*step(maskUV.y,maskBounds.w);
+  float coverage=texture2D(TEXTURE_0,maskUV).a*inside;
+  a*=mix(coverage,1.0-coverage,inverted);
+ }
+ gl_FragColor=vec4(color.rgb,a);
+}

@@ -1,0 +1,14 @@
+{
+  "bongocatmc_default": {
+    "dy_load": true,
+    "mesh": "bongocatmc/cat_mesh.json",
+    "skeleton": "bongocatmc/cat_skeleton.json",
+    "animation": {},
+    "material": "bongocatmc_mesh",
+    "texture": {
+      "tex0": "bongocatmc/atlas",
+      "tex1": "bongocatmc/poses",
+      "tex2": "bongocatmc/meta"
+    }
+  }
+}

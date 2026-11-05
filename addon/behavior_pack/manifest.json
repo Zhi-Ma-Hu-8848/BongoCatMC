@@ -1,0 +1,39 @@
+{
+  "format_version": 1,
+  "header": {
+    "name": "BongoCatMC",
+    "description": "Default cat gameplay HUD prototype",
+    "uuid": "c2df7ba3-c4ac-41f1-bfd7-d40c3cd75a49",
+    "version": [
+      0,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      18,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "66e84329-cb43-5be2-84cd-7447caa43b83",
+      "version": [
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "d08f140d-c9dd-4f65-986b-ef3908b03c46",
+      "version": [
+        0,
+        1,
+        0
+      ]
+    }
+  ]
+}

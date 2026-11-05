@@ -1,0 +1,28 @@
+{
+  "auto_hot_reload_materials": false,
+  "auto_hot_reload_mods": false,
+  "auto_hot_reload_particles": false,
+  "auto_hot_reload_shaders": false,
+  "auto_hot_reload_ui": false,
+  "auto_join_game": true,
+  "enable_cheats": true,
+  "game_executable_path": "D:/MCStudioDownload/game/MinecraftPE_Netease/3.10.0.436581/Minecraft.Windows.exe",
+  "game_mode": 1,
+  "include_debug_mod": true,
+  "included_mod_dirs": [
+    "./addon"
+  ],
+  "keep_inventory": true,
+  "log_protocol": 0,
+  "reset_world": false,
+  "world_folder_name": "BONGOCATMC_HUD_001",
+  "world_name": "BongoCatMC HUD",
+  "world_seed": 1,
+  "world_source_path": "auto",
+  "world_type": 1,
+  "mcp_server_config": {
+    "server_ip": "127.0.0.1",
+    "server_port": 18905,
+    "enabled": true
+  }
+}

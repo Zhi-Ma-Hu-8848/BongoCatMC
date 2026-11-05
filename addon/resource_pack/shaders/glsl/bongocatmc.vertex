@@ -1,0 +1,57 @@
+// __multiversion__
+#include "bongocatmc_precision.h"
+#include "neteaseModelVertexUtil.h"
+#include "uniformMacro.h"
+#include "bongocatmc_data.h"
+LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
+LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
+uniform highp vec4 EXTRA_VECTOR1;
+uniform highp vec4 EXTRA_VECTOR2;
+uniform highp vec4 EXTRA_VECTOR3;
+varying highp vec2 sourceUV;
+varying highp vec2 maskUV;
+varying highp vec4 maskBounds;
+varying highp float masked;
+varying highp float inverted;
+varying highp float opacity;
+varying highp vec2 canvasPoint;
+vec2 decode(vec4 p){vec4 b=floor(p*255.0+.5);return vec2(b.r*256.0+b.g,b.b*256.0+b.a)/65535.0;}
+vec4 meta(float i){return texture2D(TEXTURE_2,vec2(mod(i,512.0)+.5,floor(i/512.0)+.5)/vec2(512.0,META_H));}
+vec2 sampleValue(float frame,float index){float i=frame*STRIDE+index;return decode(texture2D(TEXTURE_1,vec2(mod(i,DATA_W)+.5,floor(i/DATA_W)+.5)/vec2(DATA_W,DATA_H)));}
+vec2 head(float base,float index){
+ vec2 xy=clamp(EXTRA_VECTOR1.xy,vec2(0.0),vec2(4.0)),lo=floor(xy),hi=ceil(xy),t=fract(xy);
+ return mix(mix(sampleValue(base+lo.y*5.0+lo.x,index),sampleValue(base+lo.y*5.0+hi.x,index),t.x),
+            mix(sampleValue(base+hi.y*5.0+lo.x,index),sampleValue(base+hi.y*5.0+hi.x,index),t.x),t.y);
+}
+vec2 value(float index){
+ float base=25.0*(4.0*EXTRA_VECTOR1.w+2.0*EXTRA_VECTOR2.x+EXTRA_VECTOR2.y);
+ return mix(head(base,index),head(base+200.0,index),clamp(EXTRA_VECTOR1.z,0.0,1.0));
+}
+void main(){
+ vec2 point; masked=0.0;inverted=0.0;maskUV=vec2(0.0);maskBounds=vec4(0.0);
+ if(TEXCOORD_0.y>.7){
+  vec2 corner=vec2(TEXCOORD_0.x,(TEXCOORD_0.y-.8)*10.0);
+  point=(corner-vec2(.5))*vec2(612.0/354.0,-1.0);
+  sourceUV=(vec2(0.0,1536.0)+corner*vec2(612.0,354.0))/2048.0;
+  opacity=1.0;
+ }else if(TEXCOORD_0.y>.4){
+  vec2 corner=vec2(TEXCOORD_0.x,(TEXCOORD_0.y-.5)*10.0);
+  point=(corner-vec2(.5))*vec2(612.0/354.0,-1.0);
+  float key=max(0.0,floor(EXTRA_VECTOR2.z+.5));
+  sourceUV=(vec2(1024.0+mod(key,5.0)*204.0,floor(key/5.0)*118.0)+corner*vec2(204.0,118.0))/2048.0;
+  opacity=EXTRA_VECTOR1.w;
+ }else{
+  float vertex=floor(TEXCOORD_0.x*512.0+.5),mi=vertex*4.0;
+  sourceUV=decode(meta(mi));vec4 info=floor(meta(mi+1.0)*255.0+.5);
+  point=value(vertex)*4.0-2.0;opacity=value(VERTICES+info.r).x;
+  masked=info.g>.5?1.0:0.0;inverted=info.b;
+  if(masked>.5)maskUV=value(VERTICES+DRAWABLES+info.g-1.0)*4.0-2.0;
+  maskBounds=vec4(decode(meta(mi+2.0)),decode(meta(mi+3.0)));
+ }
+ canvasPoint=point;
+ vec4 posed=vec4(point*24.0*max(EXTRA_VECTOR3.x,.01)+vec2(EXTRA_VECTOR3.y,16.0+EXTRA_VECTOR3.z),0.0,1.0);
+#if defined(USE_SKINNING) && defined(NETEASE_SKINNING)
+ posed=GetBoneMatForNetease(int(BONEID_0))*posed;
+#endif
+ gl_Position=WORLDVIEWPROJ*posed;
+}
