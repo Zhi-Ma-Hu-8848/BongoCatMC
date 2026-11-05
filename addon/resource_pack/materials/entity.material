@@ -10,7 +10,7 @@
         "DisableDepthWrite",
         "DisableDepthTest"
       ],
-      "blendSrc": "SourceAlpha",
+      "blendSrc": "One",
       "blendDst": "OneMinusSrcAlpha",
       "msaaSupport": "Both",
       "+samplerStates": [

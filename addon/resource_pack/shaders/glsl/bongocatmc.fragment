@@ -10,14 +10,17 @@ varying highp float masked;
 varying highp float inverted;
 varying highp float opacity;
 varying highp vec2 canvasPoint;
+varying highp float clipToCanvas;
 void main(){
- // The desktop canvas clips expression meshes parked outside the canvas.
- if(abs(canvasPoint.x)>306.0/354.0 || abs(canvasPoint.y)>.5)discard;
- vec4 color=texture2D(TEXTURE_0,sourceUV);float a=color.a*opacity;
+ // Only the fixed canvas layers and parked, inactive props use this bound.
+ // Active model parts (including all expression/motion effects) may extend.
+ if(clipToCanvas>.5 && (abs(canvasPoint.x)>306.0/354.0 || abs(canvasPoint.y)>.5))discard;
+ // Atlas RGB is premultiplied before filtering; material uses One / OneMinusSrcAlpha.
+ vec4 color=texture2D(TEXTURE_0,sourceUV);float coverageFactor=opacity;
  if(masked>.5){
   float inside=step(maskBounds.x,maskUV.x)*step(maskBounds.y,maskUV.y)*step(maskUV.x,maskBounds.z)*step(maskUV.y,maskBounds.w);
   float coverage=texture2D(TEXTURE_0,maskUV).a*inside;
-  a*=mix(coverage,1.0-coverage,inverted);
+  coverageFactor*=mix(coverage,1.0-coverage,inverted);
  }
- gl_FragColor=vec4(color.rgb,a);
+ gl_FragColor=color*coverageFactor;
 }

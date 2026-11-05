@@ -1,0 +1,11 @@
+{
+  "bongocatmc.lightning": {
+    "category": "ui",
+    "sounds": [
+      {
+        "name": "sounds/bongocatmc/lightning",
+        "stream": false
+      }
+    ]
+  }
+}

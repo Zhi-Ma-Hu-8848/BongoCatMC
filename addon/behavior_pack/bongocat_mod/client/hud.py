@@ -3,6 +3,7 @@ import math
 import time
 import mod.client.extraClientApi as api
 from bongocat_mod.client.data import KEY_ART
+from bongocat_mod.client.hud_drag import HudDrag
 
 
 class CatHud(api.GetScreenNodeCls()):
@@ -21,22 +22,35 @@ class CatHud(api.GetScreenNodeCls()):
         self.sent = {}
         self.top = None
         self.size = None
+        self.appearance_size = None
         self.scale = .55
         self.frames = 0
         self.visible = None
+        self.touch_button = None
+        self.drag = HudDrag(self)
+        self.position_key = None
+        self.touch_position = (0.,0.)
+        self.touch_size = (1.,1.)
         factory = api.GetEngineCompFactory()
         self.component = factory.CreateModel(api.GetLevelId())
         self.rot = factory.CreateRot(api.GetLocalPlayerId())
 
     def Create(self):
         self.created = True
+        self.owner.hud = self
 
     def bind(self):
         self.actor = self.GetBaseUIControl('/root/actor')
         if not self.actor:
             return False
-        self.GetBaseUIControl('/root').SetTouchEnable(False)
         self.actor.SetTouchEnable(False)
+        self.touch_button = self.GetBaseUIControl('/root/touch').asButton()
+        self.touch_button.AddTouchEventParams({'isSwallow':True})
+        self.touch_button.SetButtonTouchDownCallback(self.touch_down)
+        self.touch_button.SetButtonTouchMoveCallback(self.touch_move)
+        self.touch_button.SetButtonTouchUpCallback(self.touch_up)
+        self.touch_button.SetButtonTouchCancelCallback(self.touch_cancel)
+        self.touch_button.SetButtonScreenExitCallback(self.touch_cancel)
         self.doll = self.actor.asNeteasePaperDoll()
         ok = self.doll.RenderSkeletonModel({'skeleton_model_name':'bongocatmc_default',
              'animation':'','scale':1.2,'render_depth':-50,'init_rot_y':180,'init_rot_x':0,'init_rot_z':0})
@@ -46,15 +60,44 @@ class CatHud(api.GetScreenNodeCls()):
 
     def layout(self):
         size = tuple(self.GetBaseUIControl('/root').GetSize())
-        if size == self.size:
+        amount = self.owner.preferences.data['size']
+        position = self.owner.preferences.data['position']
+        position = tuple(position) if position is not None else None
+        metrics_changed = size != self.size or amount != self.appearance_size
+        if not metrics_changed and position == self.position_key:
             return
+        self.position_key = position
         self.size = size
+        self.appearance_size = amount
         scale = min(1.25,max(.55,min(size[0]/960.,size[1]/540.)))
         self.scale = scale
-        self.actor.SetSize((220*scale,180*scale))
+        if metrics_changed:
+            self.actor.SetSize((220*scale,180*scale))
         # Leave the hotbar clear; phone attack controls remain usable underneath.
-        self.actor.SetPosition((size[0]-230*scale,size[1]-234*scale))
-        self.UpdateScreen(True)
+        # Narrow target over the cat, leaving the native mobile use control free.
+        self.touch_size = (110*scale*amount,64*scale*amount)
+        original = (size[0]-10*scale-168*scale*amount,size[1]-92*scale-93*scale*amount)
+        self.touch_position = original if position is None else tuple(
+            6.+position[i]*max(1.,size[i]-self.touch_size[i]-12.) for i in (0,1))
+        shift = tuple(self.touch_position[i]-original[i] for i in (0,1))
+        self.actor.SetPosition((size[0]-230*scale+shift[0],size[1]-234*scale+shift[1]))
+        if metrics_changed:
+            self.touch_button.SetSize(self.touch_size)
+        self.touch_button.SetPosition(self.touch_position)
+        if metrics_changed:
+            self.UpdateScreen(True)
+
+    def touch_down(self, args):
+        self.drag.down(args)
+
+    def touch_move(self, args):
+        self.drag.move(args)
+
+    def touch_up(self, args):
+        self.drag.up(args)
+
+    def touch_cancel(self, args):
+        self.drag.cancel(args)
 
     def follow(self, dt):
         rotation = self.rot.GetRot()
@@ -64,7 +107,7 @@ class CatHud(api.GetScreenNodeCls()):
             self.target[0] = max(0.,min(4.,self.target[0]+yaw*.07))
             self.target[1] = max(0.,min(4.,self.target[1]-pitch*.07))
         self.rotation = rotation
-        decay = math.exp(-dt*3.)
+        decay = math.exp(-dt*3.) if self.owner.preferences.data['mouse_recenter'] else 1.
         rate = 1.-math.exp(-dt*22.)
         for i in range(2):
             self.head[i] += (self.target[i]-self.head[i])*rate
@@ -79,17 +122,21 @@ class CatHud(api.GetScreenNodeCls()):
         if self.last and now-self.last > .75:
             self.owner.inputs.clear()
             self.rotation = None
+            self.drag.cancel()
         dt = min(.1,now-self.last) if self.last else 0.
         self.last = now
         if self.doll is None and not self.bind():
             return
         self.layout()
+        self.drag.update(now)
         top = api.GetTopUI()
         if top != self.top:
             self.owner.inputs.clear()
             self.rotation = None
             self.top = top
-        visible = self.owner.enabled and self.owner.gameplay()
+        visible = self.owner.enabled and (self.owner.gameplay() or self.owner.menu is self)
+        self.touch_button.SetVisible(visible and self.owner.gameplay())
+        effects, flash = self.owner.effects.sample(now)
         if not visible or self.error:
             if self.visible is not False:
                 self.actor.SetVisible(False)
@@ -103,11 +150,18 @@ class CatHud(api.GetScreenNodeCls()):
             self.visible = True
         self.follow(dt)
         state = self.owner.inputs.snapshot(now)
+        key = float(state['key']) if self.owner.effects.motion != 'wave' else 0.
         phase = now%4.1
         blink = max(0.,1.-abs(phase-.12)/.12) if phase < .24 else 0.
-        vectors = [(round(self.head[0],4),round(self.head[1],4),blink,float(state['key'])),
-                   (float(state['left']),float(state['right']),float(KEY_ART[state['art']]),0.),
-                   (.72*self.scale,0.,8.*self.scale,0.)]
+        amount = self.owner.preferences.data['size']
+        zoom = .72*self.scale
+        # Grow up and left from the existing bottom-right canvas corner.
+        mirror = int(self.owner.preferences.data['flip_horizontal'])+2*int(self.owner.preferences.data['flip_vertical'])
+        appearance = (zoom*amount,24.*zoom*(306./354.)*(1.-amount),
+                      8.*self.scale+12.*zoom*(amount-1.),float(mirror))
+        vectors = [(round(self.head[0],4),round(self.head[1],4),blink,key),
+                   (float(state['left']),float(state['right']),float(KEY_ART[state['art']]),flash),
+                   appearance,effects]
         native = self.doll.GetModelId()
         if native != self.model:
             self.model = native
@@ -124,6 +178,7 @@ class CatHud(api.GetScreenNodeCls()):
             self.render_frame()
 
     def Destroy(self):
+        self.drag.cancel()
         self.created = False
         self.doll = None
         if self.owner.hud is self:

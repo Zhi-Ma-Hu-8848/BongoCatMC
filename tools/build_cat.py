@@ -37,6 +37,35 @@ def atlas_uv(uv, texture):
     return uv
 
 
+def premultiply_rgba(image):
+    """Filter premultiplied colour so transparent black cannot darken joins."""
+    pixels = np.array(image.convert('RGBA'), dtype=np.uint16)
+    pixels[..., :3] = (pixels[..., :3]*pixels[..., 3:4]+127)//255
+    return Image.fromarray(pixels.astype(np.uint8))
+
+
+def key_placements(keys):
+    """Trim alpha-zero margins only; pack every visible source pixel at 1:1."""
+    records = []
+    for path in keys:
+        image = Image.open(path).convert('RGBA')
+        assert image.size == (612,354), 'Unexpected key canvas: '+str(path)
+        bounds = image.getchannel('A').getbbox()
+        assert bounds is not None, 'Empty key art: '+str(path)
+        records.append({'name':path.stem,'canvas_bounds':list(bounds),
+                        'size':[bounds[2]-bounds[0],bounds[3]-bounds[1]]})
+    x,y,row_height = 1026,2,0
+    for record in sorted(records,key=lambda item:-item['size'][1]):
+        w,h = record['size']
+        if x+w+2 > 2048:
+            x,y,row_height = 1026,y+row_height+4,0
+        assert y+h+2 <= 2048, 'Native key art exceeds atlas capacity'
+        record['atlas_origin'] = [x,y]
+        x += w+4
+        row_height = max(row_height,h)
+    return records
+
+
 def inverse_uv(points, mask_points, mask_uv, triangles):
     tri = mask_points[:, triangles, :]
     a = tri[:, :, 0, :]
@@ -72,10 +101,15 @@ def build_assets():
     width = 1024
     height = 2**math.ceil(math.log2(math.ceil(stride*len(frames)/width)))
     packed = np.zeros((len(frames), stride, 4), np.uint8)
-    packed[:, :n] = encode(positions, -2, 2)
+    packed[:, :n] = encode(positions, -4, 4)
     opacity = np.clip(frames[:, n*2:n*2+nd], 0, 1)
     packed[:, n:n+nd] = encode(np.stack([opacity, np.zeros_like(opacity)], axis=2), 0, 1)
-    meta = np.zeros((n*4, 4), np.uint8)
+    keys = sorted((SRC/'resources/left-keys').glob('*.png'))
+    key_rects = key_placements(keys)
+    meta = np.zeros((n*4+len(keys)*3, 4), np.uint8)
+    for i, record in enumerate(key_rects):
+        descriptor = [record['atlas_origin'],record['canvas_bounds'][:2],record['size']]
+        meta[n*4+i*3:n*4+i*3+3] = encode(descriptor,0,65535)
     vertices = []; indices = []
     for di, d in enumerate(ds):
         start = d['offset']; nv = d['vertexCount']
@@ -91,7 +125,7 @@ def build_assets():
         for local in range(nv):
             vi = start+local; mi = vi*4
             meta[mi] = encode(uv[local:local+1], 0, 1)[0]
-            meta[mi+1] = [di, d['maskOffset']+local+1 if d['masks'] else 0, 1 if d['flags'] & 8 else 0, 255]
+            meta[mi+1] = [di, d['maskOffset']+local+1 if d['masks'] else 0, 1 if d['flags'] & 8 else 0, d['effect']]
             meta[mi+2] = encode(minuv[None, :], 0, 1)[0]
             meta[mi+3] = encode(maxuv[None, :], 0, 1)[0]
             vertices.append({'pos':[0,16,0], 'normal':[0,0,-1], 'uvcoord':[vi/512.,0], 'weight':[['root',1.]]})
@@ -114,25 +148,41 @@ def build_assets():
     atlas = Image.new('RGBA',(2048,2048))
     for i in range(3): atlas.paste(Image.open(SRC/('demomodel.1024/texture_%02d.png'%i)),(0,i*512))
     atlas.paste(Image.open(SRC/'resources/background.png'),(0,1536))
-    keys = sorted((SRC/'resources/left-keys').glob('*.png'))
-    for i,p in enumerate(keys):
-        atlas.paste(Image.open(p).resize((204,118),Image.Resampling.LANCZOS),(1024+(i%5)*204,(i//5)*118))
-    atlas.save(tex/'atlas.png')
+    for path, record in zip(keys,key_rects):
+        crop = Image.open(path).convert('RGBA').crop(record['canvas_bounds'])
+        atlas.paste(crop,tuple(record['atlas_origin']))
+    # Both model and keyboard paw use the same premultiplied blend convention.
+    # Numeric data textures above are NOT colours and must remain unmodified.
+    premultiply_rgba(atlas).save(tex/'atlas.png')
     save(RP/'models/bongocatmc/cat_mesh.json', {'mesh':[{'material':'bongocatmc/cat','vertices':vertices,'indices':indices}]})
     bounds = [[-24,-8,-1],[24,40,1]]
     save(RP/'models/bongocatmc/cat_skeleton.json', {'skeleton':[{'name':'root','parent':'root','initpos':[0,0,0], 'initquaternion':[0,0,0,1], 'initscale':[1,1,1], 'offmtx':[[1,0,0,0],[0,1,0,0],[0,0,1,0]], 'boundingbox':bounds}],'boundingbox':bounds})
     save(RP/'models/netease_models.json', {'bongocatmc_default':{'dy_load':True,'mesh':'bongocatmc/cat_mesh.json','skeleton':'bongocatmc/cat_skeleton.json','animation':{},'material':'bongocatmc_mesh','texture':{'tex0':'bongocatmc/atlas','tex1':'bongocatmc/poses','tex2':'bongocatmc/meta'}}})
-    save(RP/'materials/entity.material', {'materials':{'version':'1.0.0','bongocatmc_mesh:entity_for_skeleton':{'vertexShader':'shaders/glsl/bongocatmc.vertex','fragmentShader':'shaders/glsl/bongocatmc.fragment','states':['Blending','DisableCulling','DisableDepthWrite','DisableDepthTest'],'blendSrc':'SourceAlpha','blendDst':'OneMinusSrcAlpha','msaaSupport':'Both','+samplerStates':[{'samplerIndex':i,'textureFilter':'Bilinear' if i==0 else 'Point'} for i in range(3)]}}})
+    save(RP/'materials/entity.material', {'materials':{'version':'1.0.0','bongocatmc_mesh:entity_for_skeleton':{'vertexShader':'shaders/glsl/bongocatmc.vertex','fragmentShader':'shaders/glsl/bongocatmc.fragment','states':['Blending','DisableCulling','DisableDepthWrite','DisableDepthTest'],'blendSrc':'One','blendDst':'OneMinusSrcAlpha','msaaSupport':'Both','+samplerStates':[{'samplerIndex':i,'textureFilter':'Bilinear' if i==0 else 'Point'} for i in range(3)]}}})
     shader = RP/'shaders/glsl'; shader.mkdir(parents=True,exist_ok=True)
-    (shader/'bongocatmc_data.h').write_text('\n'.join('#define %s %.1f'%(k,v) for k,v in [('STRIDE',stride),('DATA_W',width),('DATA_H',height),('META_H',mh),('VERTICES',n),('DRAWABLES',nd)])+'\n',encoding='utf8')
+    (shader/'bongocatmc_data.h').write_text('\n'.join('#define %s %.1f'%(k,v) for k,v in [('STRIDE',stride),('DATA_W',width),('DATA_H',height),('META_H',mh),('VERTICES',n),('DRAWABLES',nd),('KEY_META',n*4)])+'\n',encoding='utf8')
+    with (shader/'bongocatmc_data.h').open('a',encoding='utf8') as f:
+        for name, bank in model['banks'].items():
+            f.write('#define BANK_%s %.1f\n'%(name.upper(),bank['start']))
+            f.write('#define STEPS_%s %.1f\n'%(name.upper(),bank['count']-1))
     client = BP/'bongocat_mod/client'; client.mkdir(parents=True,exist_ok=True)
     (client/'data.py').write_text('# Generated key art indices\nKEY_ART = '+repr({p.stem:i for i,p in enumerate(keys)})+'\n',encoding='utf8')
-    save(ROOT/'diagnostics/build_report.json', {'vertices':n,'triangles':len(indices),'poses':len(frames),'masked_vertices':masked,'key_overlays':len(keys),'texture_bytes':sum(p.stat().st_size for p in tex.glob('*.png'))})
+    motions = {name:json.loads((SRC/('live2d_motion%d.motion3.json'%i)).read_text()) for i,name in [(1,'flash'),(2,'wave')]}
+    (client/'motion_data.py').write_text('# Original Cubism motion curves\nMOTIONS = '+repr(motions)+'\n',encoding='utf8')
+    import soundfile as sf
+    sound, rate = sf.read(SRC/'live2d_motion1.flac',dtype='int16')
+    audio = RP/'sounds/bongocatmc'; audio.mkdir(parents=True,exist_ok=True)
+    sf.write(audio/'lightning.wav',sound,rate,subtype='PCM_16')
+    save(RP/'sounds/sound_definitions.json',{'bongocatmc.lightning':{'category':'ui','sounds':[{'name':'sounds/bongocatmc/lightning','stream':False}]}})
+    save(ROOT/'diagnostics/build_report.json', {'vertices':n,'triangles':len(indices),'poses':len(frames),'masked_vertices':masked,'key_overlays':len(keys),'texture_bytes':sum(p.stat().st_size for p in tex.glob('*.png')),'key_source_scale':1,'key_rects':key_rects})
 
 
 def build_ui():
     actor = {'type':'custom','renderer':'netease_paper_doll_renderer','skeleton_model_name':'','animation':'','animation_looped':False,'rotation':'gesture_x','screen_scale':1.,'init_rot_y':0,'enable_scissor_test':False,'clips_children':False,'layer':1,'size':[180,140],'anchor_from':'top_left','anchor_to':'top_left','offset':[0,0]}
-    save(RP/'ui/bongocatmc.json', {'namespace':'bongocatmc','hud':{'type':'screen','is_showing_menu':False,'absorbs_input':False,'is_modal':False,'should_steal_mouse':False,'render_game_behind':True,'controls':[{'root':{'type':'panel','size':['100%','100%'],'controls':[{'actor':actor}]}}]}})
+    from build_menu import menu_definitions, touch_button
+    ui = {'namespace':'bongocatmc','hud':{'type':'screen','is_showing_menu':False,'absorbs_input':False,'is_modal':False,'should_steal_mouse':False,'render_game_behind':True,'controls':[{'root':{'type':'panel','size':['100%','100%'],'controls':[{'actor':actor},{'touch':touch_button()}]}}]}}
+    ui.update(menu_definitions(actor))
+    save(RP/'ui/bongocatmc.json', ui)
     save(RP/'ui/_ui_defs.json', {'ui_defs':['ui/bongocatmc.json']})
     rid = 'd08f140d-c9dd-4f65-986b-ef3908b03c46'; bid = 'c2df7ba3-c4ac-41f1-bfd7-d40c3cd75a49'
     for folder, ident, kind in ((RP,rid,'resources'),(BP,bid,'data')):
@@ -144,4 +194,5 @@ def build_ui():
 if __name__ == '__main__':
     build_assets()
     build_ui()
-    print((ROOT/'diagnostics/build_report.json').read_text())
+    report = json.loads((ROOT/'diagnostics/build_report.json').read_text())
+    print(json.dumps({key:value for key,value in report.items() if key != 'key_rects'},indent=2))

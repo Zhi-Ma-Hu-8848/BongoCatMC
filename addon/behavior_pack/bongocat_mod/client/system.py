@@ -2,6 +2,8 @@
 import time
 import mod.client.extraClientApi as api
 from bongocat_mod.client.input_state import InputState, key_art
+from bongocat_mod.client.effects import Effects
+from bongocat_mod.client.preferences import Preferences
 
 
 class CatClient(api.GetClientSystemCls()):
@@ -12,6 +14,12 @@ class CatClient(api.GetClientSystemCls()):
         self.loaded = False
         self.enabled = True
         self.toggle_held = False
+        self.menu_held = False
+        self.menu = None
+        self.effects = Effects()
+        self.audio = None
+        self.preferences = Preferences()
+        self.config = None
         self.inputs = InputState()
         self.motion = None
         self.sneak_query = None
@@ -30,8 +38,12 @@ class CatClient(api.GetClientSystemCls()):
             self.ListenForEvent(api.GetEngineNamespace(),api.GetEngineSystemName(),event,self,handler)
 
     def ui_ready(self, args):
+        if self.config is None:
+            self.config = api.GetEngineCompFactory().CreateConfigClient(api.GetLevelId())
+            self.preferences = Preferences(self.config.GetConfigData('bongocatmc_appearance',True))
         if not self.ready:
             api.RegisterUI('bongocatmc','hud','bongocat_mod.client.hud.CatHud','bongocatmc.hud')
+            api.RegisterUI('bongocatmc','menu','bongocat_mod.client.menu.CatMenu','bongocatmc.menu')
         self.ready = True
         self.ensure_hud()
 
@@ -46,12 +58,48 @@ class CatClient(api.GetClientSystemCls()):
     def gameplay(self):
         return api.GetTopUI() in (None, '', 'hud_screen', 'hud')
 
+    def save_preferences(self):
+        if self.config is not None and self.preferences.dirty:
+            if self.config.SetConfigData('bongocatmc_appearance',self.preferences.data,True):
+                self.preferences.dirty = False
+
+    def open_menu(self):
+        if self.menu is None and self.gameplay() and self.ready and self.loaded:
+            self.inputs.clear()
+            self.enabled = True
+            self.menu = api.PushScreen('bongocatmc','menu')
+
+    def close_menu(self):
+        if self.menu is not None and api.GetTopUI() in ('bongocatmc.menu','menu'):
+            api.PopScreen()
+
+    def stop_effect_motion(self):
+        self.effects.stop()
+        if self.audio is not None:
+            self.audio.StopCustomMusic('bongocatmc.lightning',0.)
+
+    def play_effect_motion(self, name):
+        self.stop_effect_motion()
+        self.effects.play(name,time.time())
+        if name == 'flash':
+            if self.audio is None:
+                self.audio = api.GetEngineCompFactory().CreateCustomAudio(api.GetLevelId())
+            self.audio.PlayCustomUIMusic('bongocatmc.lightning',1.,1.,False)
+
     def key(self, args):
         code_text = str(args.get('key',''))
         if not code_text.lstrip('-').isdigit():
             return
         code = int(code_text)
         down = str(args.get('isDown')) == '1'
+        if code == 70:
+            if down and not self.menu_held:
+                if self.menu is None:
+                    self.open_menu()
+                else:
+                    self.close_menu()
+            self.menu_held = down
+            return
         if code == 119:
             if down and not self.toggle_held and self.gameplay():
                 self.enabled = not self.enabled
@@ -134,8 +182,12 @@ class CatClient(api.GetClientSystemCls()):
         self.update_sneak()
         if self.hud is not None:
             self.hud.render_frame()
+        if self.menu is not None:
+            self.menu.render_frame()
 
     def Destroy(self):
+        self.save_preferences()
+        self.stop_effect_motion()
         for event, handler in self.bindings:
             self.UnListenForEvent(api.GetEngineNamespace(),api.GetEngineSystemName(),event,self,handler)
         self.inputs.clear()
