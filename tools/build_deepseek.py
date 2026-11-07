@@ -44,13 +44,13 @@ def build_art():
     materials=RP/'materials/entity.material';data=json.loads(materials.read_text());mat=dict(data['materials']['bongocatmc_mesh:entity_for_skeleton'])
     mat.update(vertexShader='shaders/glsl/bongocatmc_deepseek.vertex',fragmentShader='shaders/glsl/bongocatmc_deepseek.fragment')
     data['materials']['bongocatmc_deepseek:entity_for_skeleton']=mat;save(materials,data)
-    import soundfile as sf
+    from submission_audio import write_audio
     audio=RP/'sounds/bongocatmc';sounds_path=RP/'sounds/sound_definitions.json';sounds=json.loads(sounds_path.read_text())
     cfg=json.loads((SRC/'deepseek.model3.json').read_text())
     for clip in cfg['FileReferences']['Motions']['CAT_motion_lock']:
         if clip.get('Sound'):
-            samples,rate=sf.read(SRC/clip['Sound'],dtype='int16');name='deepseek_'+clip['File'].split('.')[0].lower()
-            sf.write(audio/(name+'.wav'),samples,rate,subtype='PCM_16')
+            name='deepseek_'+clip['File'].split('.')[0].lower()
+            write_audio(SRC/clip['Sound'],audio/(name+'.ogg'))
             sounds['bongocatmc.'+name]={'category':'ui','sounds':[{'name':'sounds/bongocatmc/'+name,'stream':False}]}
     save(sounds_path,sounds)
     save(ROOT/'tools/fixtures/deepseek_keys.json',records)

@@ -17,7 +17,7 @@
 项目修改：将原网格、参数、遮罩、动作曲线和原尺寸按键美术转换为网易纸娃娃资源；
 添加游戏内键鼠/触屏响应、菜单、镜像、缩放、位置拖动和移动端材质适配。
 原桌面程序的系统级输入监听、桌面窗口及原生运行库没有放入游戏包。
-模型图集裁透明边缘但不缩小可见像素，颜色使用预乘 Alpha；FLAC 音效解码为 WAV。
+模型图集裁透明边缘但不缩小可见像素，颜色使用预乘 Alpha；音效从原音源编码为网易提审要求的 Ogg Vorbis，原音源保持不变。
 
 ## DeepSeek 桌宠
 
@@ -53,7 +53,7 @@ SDK 协议还有出版、可扩展应用及许可兼容等条件；“免费上�
 
 ## 构建与运行依赖
 
-NumPy（BSD-3-Clause）、Pillow（HPND）、SoundFile（BSD-3-Clause）和 esbuild（MIT）
+NumPy（BSD-3-Clause）、Pillow（HPND）、SoundFile（BSD-3-Clause）、imageio-ffmpeg（BSD-2-Clause）和 esbuild（MIT）
 由开发者通过各自包管理器安装，不附带在游戏包里。SoundFile 依赖的 libsndfile
-按其原条款提供。Node.js、Python、Minecraft、ModSDK、MCDK 的权利由各自权利人保留。
+按其原条款提供；imageio-ffmpeg 使用的 FFmpeg 二进制遵循其具体构建对应的 LGPL/GPL 条款，不打入游戏包。Node.js、Python、Minecraft、ModSDK、MCDK 的权利由各自权利人保留。
 发布自己的依赖二进制副本时，应一并保留对应版本的许可证与声明。

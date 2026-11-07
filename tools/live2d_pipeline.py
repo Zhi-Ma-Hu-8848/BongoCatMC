@@ -177,7 +177,7 @@ def convert(args):
             raise ValueError('Source differs from this adapter\'s pinned model package. Inspect and implement/validate an adapter first. Output was not created.')
         if not shutil.which('node'):
             raise ValueError('Node.js is required.')
-        import numpy, PIL, soundfile  # noqa: F401; fail before creating output
+        import numpy, PIL, soundfile, imageio_ffmpeg  # noqa: F401; fail before creating output
         output.mkdir(parents=True)
         for folder in ('tools', 'assets/source'):
             shutil.copytree(ROOT / folder, output / folder, ignore=IGNORE)
@@ -223,6 +223,8 @@ def validate(output):
     if inventory(output / 'addon') != record['runtime_sha256']:
         raise ValueError('Runtime changed after conversion; rebuild before exporting.')
     rp = output / 'addon/resource_pack'
+    from submission_audio import check_audio
+    audio = check_audio(rp)
     registry = read(rp / 'models/netease_models.json')
     checked = []
     for name, item in registry.items():
@@ -241,8 +243,8 @@ def validate(output):
         checked.append(name)
     for pack in ('behavior_pack', 'resource_pack'):
         read(output / 'addon' / pack / 'manifest.json')
-    return {'ok': True, 'models': checked, 'runtime_files': len(record['runtime_sha256']),
-            'checks': ['build-time Core comparisons', 'adapter regression tests', 'runtime hashes', 'mesh indices and finite vertices', 'registry dependencies and PNG integrity'],
+    return {'ok': True, 'models': checked, 'runtime_files': len(record['runtime_sha256']), 'audio': audio,
+            'checks': ['build-time Core comparisons', 'adapter regression tests', 'runtime hashes', 'mesh indices and finite vertices', 'registry dependencies and PNG integrity', 'Ogg Vorbis bitrate and sound references'],
             'limitation': 'Offline validation only; no MC or mobile-device certification.'}
 
 

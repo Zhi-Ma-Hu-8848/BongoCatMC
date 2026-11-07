@@ -177,10 +177,9 @@ def build_assets():
     (client/'data.py').write_text('# Generated key art indices\nKEY_ART = '+repr({p.stem:i for i,p in enumerate(keys)})+'\n',encoding='utf8')
     motions = {name:json.loads((SRC/('live2d_motion%d.motion3.json'%i)).read_text()) for i,name in [(1,'flash'),(2,'wave')]}
     (client/'motion_data.py').write_text('# Original Cubism motion curves\nMOTIONS = '+repr(motions)+'\n',encoding='utf8')
-    import soundfile as sf
-    sound, rate = sf.read(SRC/'live2d_motion1.flac',dtype='int16')
+    from submission_audio import write_audio
     audio = RP/'sounds/bongocatmc'; audio.mkdir(parents=True,exist_ok=True)
-    sf.write(audio/'lightning.wav',sound,rate,subtype='PCM_16')
+    write_audio(SRC/'live2d_motion1.flac', audio/'lightning.ogg')
     sounds_path = RP/'sounds/sound_definitions.json'
     sounds = json.loads(sounds_path.read_text()) if sounds_path.exists() else {}
     sounds['bongocatmc.lightning'] = {'category':'ui','sounds':[{'name':'sounds/bongocatmc/lightning','stream':False}]}

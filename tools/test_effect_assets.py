@@ -1,4 +1,4 @@
-"""Check the packed shader payload, moving masks, and lossless source audio."""
+"""Check packed shader payload, moving masks, and submission audio timing."""
 import json
 import unittest
 import numpy as np
@@ -31,11 +31,15 @@ class EffectAssetTests(unittest.TestCase):
             offset+=d['vertexCount']
         self.assertEqual(next(d['effect'] for d in ds if d['id']=='ArtMesh17'),1)
 
-    def test_sound_preserves_source_pcm(self):
-        source,rate=sf.read(SRC/'live2d_motion1.flac',dtype='int16')
-        built,output_rate=sf.read(RP/'sounds/bongocatmc/lightning.wav',dtype='int16')
+    def test_sound_preserves_timing_and_channels_in_submission_format(self):
+        from submission_audio import vorbis_info
+        path=RP/'sounds/bongocatmc/lightning.ogg'
+        self.assertEqual(vorbis_info(path)['bitrate'],96000)
+        source,rate=sf.read(SRC/'live2d_motion1.flac',dtype='float32')
+        built,output_rate=sf.read(path,dtype='float32')
         self.assertEqual(rate,output_rate)
-        np.testing.assert_array_equal(source,built)
+        self.assertEqual(source.shape,built.shape)
+        self.assertGreater(float(np.corrcoef(source.ravel(),built.ravel())[0,1]),.95)
 
 
 if __name__=='__main__':unittest.main()

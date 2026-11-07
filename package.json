@@ -4,6 +4,7 @@
   "license": "SEE LICENSE IN COPYRIGHT.md",
   "scripts": {
     "check:licenses": "python tools/sync_license_notices.py --check",
+    "check:audio": "python tools/submission_audio.py",
     "live2d": "python tools/live2d_pipeline.py",
     "test:conversion": "python tools/test_live2d_pipeline.py",
     "sample:cat": "node tools/sample_cat.cjs",

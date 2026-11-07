@@ -48,7 +48,7 @@ Live2D / BongoCat 的通用检查、两种已知模型的隔离转换、验证�
 
 原始模型 224 顶点，运行网格 264 个三角形（含背景及按键爪）。400 组输入姿态和 5125 组独立参数姿态；3 张运行纹理合计约 1.28 MiB，其中姿态数据是顶点数值，不是图片序列帧。每帧只更新改变的着色器参数，输入完全在客户端处理，无持续网络同步。
 
-表情/动作的部件独立性在构建时与 Cubism Core 的 80 组组合参数核对，另用 40 组中间参数核对插值，墨镜的非线性运动使用更密的数值采样。闪电与挥手的时间曲线直接保留原 JSON（包括非受限贝塞尔的时间轴求逆）；原 FLAC 音效无损解码为 PCM WAV。默认猫之外的模型转换不在这套专用参数数据的支持范围。
+表情/动作的部件独立性在构建时与 Cubism Core 的 80 组组合参数核对，另用 40 组中间参数核对插值，墨镜的非线性运动使用更密的数值采样。闪电与挥手的时间曲线直接保留原 JSON（包括非受限贝塞尔的时间轴求逆）；发布音效从原音源导出为 96 kbps Ogg Vorbis，最大码率 128 kbps，保持采样率、声道和时长。原音源保留不变，Vorbis 编码本身为有损格式。默认猫之外的模型转换不在这套专用参数数据的支持范围。
 
 55 张按键爪保留原始 612×354 画布内的全部可见像素，不降采样、不缩小。图集仅去除 Alpha 为零的外围空白，元数据保留原坐标，绘制时恢复原位置；图集仍为 2048×2048。图片不以包体或预估性能为由降低分辨率。
 
@@ -68,7 +68,9 @@ DeepSeek 重新构建：`npm install` → `npm run sample:deepseek` → `python 
 
 ## 构建与检查
 
-依赖 Node.js、Python 3、NumPy、Pillow、SoundFile。游戏脚本兼容 Python 2.7。
+依赖 Node.js、Python 3、NumPy、Pillow、SoundFile、imageio-ffmpeg。可运行 `python -m pip install -r requirements-build.txt` 安装构建依赖。游戏脚本兼容 Python 2.7。
+
+网易错误码 33 要求音效为 OGG、码率不超过 128 kbps。`python tools/submission_audio.py --rebuild` 从原音源重建三段音效并移除对应旧 WAV；`python tools/submission_audio.py` 检查实际格式、码率和声音资源引用。转换工具的 validate/export 也会执行该检查。修改后须重新打包，旧 ZIP 不会自动更新。
 
 ```powershell
 node tools/sample_cat.cjs

@@ -4,7 +4,8 @@
     "sampler": "tools/sample_cat.cjs",
     "tests": [
       "tools/test_texture_alpha.py",
-      "tools/test_effect_assets.py"
+      "tools/test_effect_assets.py",
+      "tools/test_submission_audio.py"
     ],
     "source_sha256": "810a30d26c1d8e7104b3d361d093c97fec3dbf4999b26e1a97272c89f6caa8a7"
   },
@@ -12,7 +13,8 @@
     "source": "assets/source/deepseek/img/standard/cat_model",
     "sampler": "tools/sample_deepseek_parameters.cjs",
     "tests": [
-      "tools/test_deepseek.py"
+      "tools/test_deepseek.py",
+      "tools/test_submission_audio.py"
     ],
     "source_sha256": "91456dbb33987dd3acc175d529c20f98f820804e5e9fcf4c9c372d81795356da"
   }

@@ -1,6 +1,7 @@
 """Boundary and real-output checks for the offline conversion entry point."""
 import argparse
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -93,7 +94,7 @@ class BuiltOutputTests(unittest.TestCase):
     def test_both_real_conversions_and_export_exclusions(self):
         # Integration artifacts are optional outside the developer workspace.
         for profile in ('default', 'deepseek'):
-            output = pipeline.ROOT / 'build' / ('pipeline-' + profile)
+            output = Path(os.environ.get('BONGOCATMC_PIPELINE_TEST_ROOT', str(pipeline.ROOT / 'build'))) / ('pipeline-' + profile)
             if not (output / 'conversion.json').exists():
                 self.skipTest('Run both isolated conversions first')
             self.assertTrue(pipeline.validate(output)['ok'])

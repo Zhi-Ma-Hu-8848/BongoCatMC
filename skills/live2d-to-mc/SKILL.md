@@ -11,7 +11,7 @@ description: 将 Live2D Cubism 模型及 BongoCat 桌宠适配为网易 Minecraf
 
 先定位 BongoCatMC 工具项目，查找 `tools/live2d_pipeline.py`、`tools/live2d_profiles.json` 和项目 `AGENTS.md`。本机参考位置为 `D:/Users/CJK/ChatGPT/BongoCatMC`；Skill 安装位置与工具项目位置不同，不能按当前工作目录猜路径。工具未找到时先在已有工作区查找，不伪造命令或转换结果。
 
-使用 Python 3.11+、Node.js、NumPy、Pillow、soundfile。MC 端行为脚本仍保持该项目要求的 Python 2.7 兼容。CLI 的具体用法及输出边界见 [转换工具](references/conversion.md)。
+使用 Python 3.11+、Node.js、NumPy、Pillow、soundfile、imageio-ffmpeg。MC 端行为脚本仍保持该项目要求的 Python 2.7 兼容。CLI 的具体用法及输出边界见 [转换工具](references/conversion.md)。
 
 1. 先 `inspect` 输入模型文件、目录或 ZIP，确认依赖、贴图原尺寸、动作与表情、物理和已支持适配器。
 2. 已匹配的模型使用 `convert` 写入新的隔离目录。未知或修改过的模型进入适配研究，不强套现有适配器，不通过改指纹绕过兼容性验证。
