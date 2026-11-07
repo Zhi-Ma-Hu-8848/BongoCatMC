@@ -3,7 +3,7 @@
 独立的网易 Minecraft ModSDK 项目。内置默认小猫和 DeepSeek 桌宠，HUD 响应游戏输入。
 
 **许可分开处理：项目自身代码采用 AGPL-3.0-only（含针对宿主与 Live2D 的有限额外许可）；白猫素材为 MIT；DeepSeek 模型获作者针对本项目免费上架的单独授权；Live2D 组件保持原条款。**
-详见 [许可范围](COPYRIGHT.md)、[第三方声明](THIRD_PARTY_NOTICES.md) 和 [源码分发说明](docs/source-distribution.md)。仓库目前私有，尚不能把其链接当成玩家可用的源码下载入口。
+详见 [许可范围](COPYRIGHT.md)、[第三方声明](THIRD_PARTY_NOTICES.md) 和 [源码分发说明](docs/source-distribution.md)。源码已公开，可 [浏览仓库](https://github.com/Zhi-Ma-Hu-8848/BongoCatMC) 或 [下载当前源码 ZIP](https://github.com/Zhi-Ma-Hu-8848/BongoCatMC/archive/refs/heads/main.zip)。第三方素材不因仓库公开而成为 AGPL 素材。
 
 DeepSeek 模型作者：**mefist-兰登版 & 赤风RED**。感谢两位作者许可本项目使用并免费上架；该许可不等于模型按 AGPL/MIT 开源。
 
