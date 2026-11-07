@@ -1,0 +1,4 @@
+interface:
+  display_name: "Live2D 与 BongoCat 转 Minecraft"
+  short_description: "转换 Live2D 网格与参数，适配桌宠输入并验证网易 MC 纸娃娃渲染"
+  default_prompt: "使用 $live2d-to-mc 检查这个模型，选择适配方案并在隔离目录转换为网易 MC 纸娃娃。"

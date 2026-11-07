@@ -9,3 +9,7 @@ __pycache__/
 node_modules/
 .env
 .env.*
+# Local submissions, packaged mods and private permission evidence.
+deliverables/
+private/
+addon/*.zip

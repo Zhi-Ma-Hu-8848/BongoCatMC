@@ -1,0 +1,27 @@
+BongoCatMC additional permission under GNU AGPL version 3, section 7
+
+Copyright (C) 2026 Zhi-Ma-Hu-8848 and BongoCatMC contributors.
+
+For the original BongoCatMC material whose copyright holders grant this
+permission, you may link or combine that material with Minecraft (including
+the NetEase edition and its ModSDK host interfaces), and with the separately
+licensed Live2D Cubism Core and Framework components identified in
+THIRD_PARTY_NOTICES.md, and convey the resulting combination.
+
+The AGPL requirements continue to apply to the covered BongoCatMC material,
+including provision of its Corresponding Source. This permission does not
+require the named external components to be relicensed under the AGPL, does
+not relicense them, and does not waive any of their own license requirements.
+It is not a grant of rights to any character, model, texture, sound or other
+separately licensed artwork.
+
+This permission is granted only for material whose copyright holders have
+authorized it. It does not extend to upstream BongoCat code or other third-party
+code merely because it is copied, adapted, imported or placed in this repository.
+Permission from the relevant rightsholders is still needed where their terms
+would otherwise prohibit the combination or distribution.
+
+You may remove this additional permission from your version as provided by
+section 7 of the AGPL. This permission makes no representation that any
+particular third-party release, service, SDK usage or model distribution has
+been approved by its rightsholders.

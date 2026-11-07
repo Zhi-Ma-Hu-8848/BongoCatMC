@@ -86,6 +86,8 @@ def inverse_uv(points, mask_points, mask_uv, triangles):
 
 
 def build_assets():
+    from sync_license_notices import sync
+    sync()
     model = json.loads((ROOT/'build/model.json').read_text())
     n = model['vertexCount']; ds = model['drawables']; nd = len(ds)
     frames = np.fromfile(ROOT/'build/poses.f32', dtype='<f4').reshape(model['poseCount'], model['stride'])
@@ -187,13 +189,15 @@ def build_assets():
 
 
 def build_ui():
+    from sync_license_notices import sync
+    sync()
     actor = {'type':'custom','renderer':'netease_paper_doll_renderer','skeleton_model_name':'','animation':'','animation_looped':False,'rotation':'gesture_x','screen_scale':1.,'init_rot_y':0,'enable_scissor_test':False,'clips_children':False,'layer':1,'size':[180,140],'anchor_from':'top_left','anchor_to':'top_left','offset':[0,0]}
     from build_menu import menu_definitions, touch_button
     ui = {'namespace':'bongocatmc','hud':{'type':'screen','is_showing_menu':False,'absorbs_input':False,'is_modal':False,'should_steal_mouse':False,'render_game_behind':True,'controls':[{'root':{'type':'panel','size':['100%','100%'],'controls':[{'actor':actor},{'touch':touch_button()}]}}]}}
     ui.update(menu_definitions(actor))
     save(RP/'ui/bongocatmc.json', ui)
     save(RP/'ui/_ui_defs.json', {'ui_defs':['ui/bongocatmc.json']})
-    rid = 'd08f140d-c9dd-4f65-986b-ef3908b03c46'; bid = 'c2df7ba3-c4ac-41f1-bfd7-d40c3cd75a49'
+    rid = 'c34da1b3-212b-4d38-acaa-d0d243e131da'; bid = '09e4aefb-93c4-4408-b072-f3f2221c043a'
     for folder, ident, kind in ((RP,rid,'resources'),(BP,bid,'data')):
         manifest = {'format_version':1,'header':{'name':'BongoCatMC','description':'Default cat gameplay HUD prototype','uuid':ident,'version':[0,1,0],'min_engine_version':[1,18,0]},'modules':[{'type':kind,'uuid':str(uuid.uuid5(uuid.UUID(ident),'module')),'version':[0,1,0]}]}
         if kind=='data': manifest['dependencies']=[{'uuid':rid,'version':[0,1,0]}]

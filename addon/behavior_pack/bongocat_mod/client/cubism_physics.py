@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# Copyright(c) Live2D Inc. All rights reserved.
+# Framework-derived portions: Live2D Open Software License.
+# https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html
+# Python adaptation and integration: BongoCatMC contributors, 2026.
+# See legal/THIRD_PARTY_NOTICES.md; no relicensing of Live2D code is intended.
 """Small client-side Cubism pendulum evaluator for the supplied physics3 rig.
 
 Algorithm adapted from Live2D Cubism Framework (see tools/vendor/framework/LICENSE.md).

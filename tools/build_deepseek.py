@@ -57,6 +57,8 @@ def build_art():
     save(ROOT/'diagnostics/deepseek_build.json',{'vertices':n,'atlas_size':[4096,4096],'key_source_scale':1,'keys':records})
 
 if __name__=='__main__':
+    from sync_license_notices import sync
+    sync()
     build_art()
     from build_deepseek_parameters import build
     build()
